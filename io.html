@@ -1,201 +1,647 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Aplikasi - Download Aplikasi Pihak Ketiga</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        .app-card {
-            perspective: 1000px;
-            transition: transform 0.3s;
-        }
-        .app-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-        }
-        .app-card:hover .app-card-inner {
-            transform: rotateY(20deg) rotateX(-10deg);
-        }
-        .download-btn {
-            transition: all 0.3s;
-            background-color: #10B981;
-        }
-        .download-btn:hover {
-            background-color: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        .app-image-container {
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Radio Signal Simulator — Spectrum, Waterfall, AM/FM Tuner</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121820; --ink:#e6eef7; --muted:#9fb1c7; --accent:#4fd1c5; --accent2:#60a5fa; --warn:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,sans-serif;
+    color:var(--ink); background:linear-gradient(180deg,#0b0f14,#0a0d12);
+    display:flex; flex-direction:column; gap:12px;
+  }
+  header{
+    padding:14px 16px; background:linear-gradient(180deg,#10151d,#0e131a);
+    border-bottom:1px solid #1d2633; position:sticky; top:0; z-index:5;
+  }
+  h1{font-size:18px; margin:0; letter-spacing:.3px; display:flex; align-items:center; gap:10px}
+  h1 .dot{width:10px;height:10px;border-radius:50%; background:radial-gradient(circle at 30% 30%, #7fffd4, #277e76)}
+  main{padding:0 12px 16px; display:grid; gap:12px}
+  .grid{
+    display:grid; grid-template-columns: 1.5fr 1fr; gap:12px;
+  }
+  .card{
+    background:var(--panel); border:1px solid #1b2431; border-radius:16px; overflow:hidden; box-shadow:0 0 0 1px #0c1219 inset, 0 8px 24px rgba(0,0,0,.35);
+  }
+  .card h2{
+    margin:0; font-size:14px; font-weight:600; color:#cfe0f5; letter-spacing:.25px;
+    padding:10px 12px; border-bottom:1px solid #1b2431; background:linear-gradient(180deg,#0f151d,#0d1219);
+  }
+  .card-body{padding:12px}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .row > *{flex:1}
+  label{font-size:12px; color:var(--muted); margin-bottom:4px; display:block}
+  input[type="number"],input[type="text"],select{
+    width:100%; background:#0c1219; color:var(--ink); border:1px solid #1c2431; border-radius:10px; padding:8px 10px;
+    outline:none; transition:border .15s, box-shadow .15s;
+  }
+  input[type="number"]:focus, input[type="text"]:focus, select:focus{
+    border-color:#2a3a50; box-shadow:0 0 0 3px rgba(80,130,200,.15);
+  }
+  input[type="range"]{width:100%}
+  button{
+    background:linear-gradient(180deg,#2a394d,#223044); color:var(--ink);
+    border:1px solid #2b3a51; border-radius:10px; padding:8px 12px; cursor:pointer;
+    font-weight:600; letter-spacing:.2px;
+  }
+  button:hover{filter:brightness(1.07)}
+  button.accent{background:linear-gradient(180deg,#1c6a64,#17534f); border-color:#1f6e67}
+  button.warn{background:linear-gradient(180deg,#7c5b18,#6b4d14); border-color:#8a6418}
+  .muted{color:var(--muted); font-size:12px}
+  canvas{display:block; width:100%; height:240px; background:#0b0f14}
+  #waterfall{height:220px}
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  th, td{padding:8px 8px; border-bottom:1px solid #1d2633}
+  th{color:#cfe0f5; font-weight:600; text-align:left; background:#0e141b; position:sticky; top:0}
+  td .badge{padding:2px 6px; border-radius:999px; font-size:11px; background:#13202b; border:1px solid #1f384d; color:#cfe0f5}
+  .flex{display:flex; align-items:center; gap:8px}
+  .right{margin-left:auto}
+  .pill{
+    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #243246;
+    background:linear-gradient(180deg,#0e151e,#0c1219); color:#bcd0e9; font-size:12px;
+  }
+  .help{color:#8fb0d3; font-size:12px}
+  .foot{padding:8px 12px; border-top:1px solid #1b2431; color:#8aa2bf; background:linear-gradient(180deg,#0f151d,#0d1219); font-size:12px}
+  .range-wrap{display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center}
+</style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-6">
-            <div class="flex justify-between items-center">
-                <h1 class="text-3xl font-bold text-gray-800">Toko Aplikasi</h1>
-                <div class="relative">
-                    <input type="text" placeholder="Cari aplikasi..." class="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <button class="absolute right-3 top-2 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+<body>
+  <header>
+    <h1><span class="dot"></span> Radio Signal Simulator <span class="pill">Spectrum + Waterfall + AM/FM Tuner</span></h1>
+  </header>
+
+  <main>
+    <div class="grid">
+      <!-- LEFT: Scopes -->
+      <section class="card">
+        <h2>Spektrum & Waterfall</h2>
+        <div class="card-body" style="padding:0">
+          <canvas id="spectrum" width="1400" height="260"></canvas>
+          <canvas id="waterfall" width="1400" height="220"></canvas>
+          <div class="foot">
+            Scroll untuk zoom (horizontal), drag untuk pan. Klik dua kali untuk reset view.
+          </div>
         </div>
-    </header>
+      </section>
 
-    <main class="container mx-auto px-4 py-8">
-        <section class="mb-12">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Aplikasi Terbaru</h2>
-            <div class="app-grid">
-                <!-- App 1 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f7f71ad9-0d59-410c-8ac2-898fee3a65f1.png" alt="Aplikasi WhatsApp Business dengan ikon berwarna hijau, tampilan antarmuka profesional untuk bisnis kecil" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">WhatsApp Business</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Solusi komunikasi bisnis profesional</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App 2 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ab5aa4b8-8402-45f6-a2d2-78406d919afa.png" alt="Aplikasi desain grafis Canva dengan berbagai template kreatif dan alat editing" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Canva</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Alat desain grafis untuk semua orang</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App 3 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/90561f54-a48b-4fe0-892a-43a4a4bbf439.png" alt="Aplikasi media sosial TikTok dengan logo berbentuk not musik, platform untuk video pendek kreatif" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">TikTok</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Platform video pendek terpopuler</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App 4 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ad441288-acb8-420b-bfb5-29e9eb50d56b.png" alt="Aplikasi streaming musik Spotify dengan ikon berwarna hijau neon, menampilkan daftar putar musik populer" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Spotify</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Dengarkan jutaan lagu dan podcast</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App 5 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5ec2cbed-ebe2-4ce6-a86e-1537af5b4543.png" alt="Aplikasi konferensi video Zoom dengan ikon berwarna biru, tampilan rapat virtual dengan banyak peserta" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Zoom</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Solusi rapat dan webinar online</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App 6 -->
-                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="app-card-inner">
-                        <div class="app-image-container">
-                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/382dc520-1837-4bcb-adc3-801a83053250.png" alt="Aplikasi Instagram dengan ikon berwarna ungu merah muda, tampilan feed foto dan cerita kreatif" class="w-full h-full object-cover" />
-                        </div>
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Instagram</h3>
-                            <p class="text-gray-600 mt-2 mb-4">Berbagi momen dengan foto dan video</p>
-                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
-                        </div>
-                    </div>
-                </div>
+      <!-- RIGHT: Controls -->
+      <section class="card">
+        <h2>Kontrol & Tuner</h2>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <label>Center Freq (MHz)</label>
+              <input id="centerFreq" type="number" step="0.1" value="100.0">
             </div>
-        </section>
-    </main>
+            <div>
+              <label>Span / Width (MHz)</label>
+              <input id="span" type="number" step="1" value="20">
+            </div>
+          </div>
 
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between">
-                <div class="mb-6 md:mb-0">
-                    <h3 class="text-xl font-bold mb-4">Toko Aplikasi</h3>
-                    <p class="text-gray-400">Tempat terbaik untuk menemukan aplikasi pihak ketiga berkualitas.</p>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Kontak Kami</h3>
-                    <p class="text-gray-400">support@tokoapp.com</p>
-                    <p class="text-gray-400">+62 123 4567 890</p>
-                </div>
+          <div class="row">
+            <div>
+              <label>Noise Floor</label>
+              <div class="range-wrap">
+                <input id="noise" type="range" min="-120" max="-60" step="1" value="-95">
+                <span class="muted" id="noiseVal">-95 dB</span>
+              </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>© 2023 Toko Aplikasi. Semua hak dilindungi.</p>
+            <div>
+              <label>FFT Smoothing</label>
+              <div class="range-wrap">
+                <input id="smooth" type="range" min="0" max="0.95" step="0.05" value="0.35">
+                <span class="muted" id="smoothVal">0.35</span>
+              </div>
             </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid #1b2431; margin:12px 0">
+
+          <div class="row">
+            <div>
+              <label>Tuner Frequency (MHz)</label>
+              <input id="tuneFreq" type="number" step="0.01" value="100.1">
+            </div>
+            <div>
+              <label>Bandwidth (kHz)</label>
+              <input id="bw" type="number" step="1" value="200">
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="tuneBtn" class="accent">Tune & Play</button>
+            <button id="stopBtn">Stop</button>
+            <span class="help">Tuner akan “mengunci” ke sinyal FM/AM terdekat dalam bandwidth.</span>
+          </div>
+
+          <hr style="border:none;border-top:1px solid #1b2431; margin:12px 0">
+
+          <div class="row">
+            <div>
+              <label>Jenis Sinyal</label>
+              <select id="sigType">
+                <option value="fm">FM</option>
+                <option value="am">AM</option>
+                <option value="cw">Carrier (CW)</option>
+              </select>
+            </div>
+            <div>
+              <label>Freq (MHz)</label>
+              <input id="sigFreq" type="number" step="0.01" value="100.1">
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Power (dB)</label>
+              <input id="sigPower" type="number" step="1" value="-60">
+            </div>
+            <div>
+              <label>FM Dev (kHz) / AM Depth (%)</label>
+              <input id="sigParam" type="number" step="1" value="75">
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="addSig" class="accent">Tambah Sinyal</button>
+            <button id="clearSig" class="warn">Hapus Semua</button>
+            <span class="right muted">Tips: bikin beberapa FM “stasiun” biar seru.</span>
+          </div>
         </div>
-    </footer>
+      </section>
+    </div>
 
-    <script>
-        // 3D rotation effect for app cards
-        document.querySelectorAll('.app-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-                const inner = card.querySelector('.app-card-inner');
-                inner.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-            });
-            
-            card.addEventListener('mouseleave', (e) => {
-                const inner = card.querySelector('.app-card-inner');
-                inner.style.transform = 'rotateY(0deg) rotateX(0deg)';
-            });
-        });
+    <!-- Signals table -->
+    <section class="card">
+      <h2>Daftar Sinyal Aktif</h2>
+      <div class="card-body" style="padding:0">
+        <div style="max-height:260px; overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tipe</th>
+                <th>Freq (MHz)</th>
+                <th>Power (dB)</th>
+                <th>Param</th>
+                <th>Audio</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="sigTable"></tbody>
+          </table>
+        </div>
+        <div class="foot">
+          Param = <b>FM Dev</b> (kHz) untuk FM, <b>AM Depth</b> (%) untuk AM, <b>—</b> untuk CW.
+        </div>
+      </div>
+    </section>
+  </main>
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
+<script>
+/* ===========================================================
+   Radio Signal Simulator — logical model
+   - Spectrum & waterfall rendering
+   - Add/remove FM/AM/CW signals
+   - Tuner with simple audio synthesis (fake demod)
+   =========================================================== */
+
+const state = {
+  centerMHz: 100.0,
+  spanMHz:   20.0,
+  noiseFloor: -95, // dB
+  smooth: 0.35,
+  signals: [], // {id,type,fMHz,powerDb,param, toneHz}
+  nextId: 1,
+  tuneMHz: 100.1,
+  bandwidthKHz: 200,
+  view: { // for pan/zoom
+    center: 100.0, span: 20.0,
+  }
+};
+
+// DOM
+const el = {
+  spectrum: document.getElementById('spectrum'),
+  waterfall: document.getElementById('waterfall'),
+  centerFreq: document.getElementById('centerFreq'),
+  span: document.getElementById('span'),
+  noise: document.getElementById('noise'),
+  noiseVal: document.getElementById('noiseVal'),
+  smooth: document.getElementById('smooth'),
+  smoothVal: document.getElementById('smoothVal'),
+  tuneFreq: document.getElementById('tuneFreq'),
+  bw: document.getElementById('bw'),
+  tuneBtn: document.getElementById('tuneBtn'),
+  stopBtn: document.getElementById('stopBtn'),
+  sigType: document.getElementById('sigType'),
+  sigFreq: document.getElementById('sigFreq'),
+  sigPower: document.getElementById('sigPower'),
+  sigParam: document.getElementById('sigParam'),
+  addSig: document.getElementById('addSig'),
+  clearSig: document.getElementById('clearSig'),
+  sigTable: document.getElementById('sigTable'),
+};
+
+// Canvas ctx
+const ctxSpec = el.spectrum.getContext('2d');
+const ctxWF   = el.waterfall.getContext('2d');
+
+// Audio
+let audioCtx = null;
+let masterGain = null;
+const stationOscillators = new Map(); // id -> {osc, gain, mod?}
+
+// Utils
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rnd = (a,b)=> a + Math.random()*(b-a);
+
+// Map freq (MHz) -> x pixel (0..w)
+function f2x(fMHz){
+  const {center, span} = state.view;
+  const start = center - span/2;
+  return ( (fMHz - start) / span ) * el.spectrum.width;
+}
+// Map pixel -> freq (MHz)
+function x2f(x){
+  const {center, span} = state.view;
+  const start = center - span/2;
+  return start + (x / el.spectrum.width) * span;
+}
+
+// Rendering spectrum line from signals + noise
+let smoothBuf = new Float32Array(1400).fill(-120);
+function renderSpectrum(){
+  const w = el.spectrum.width, h = el.spectrum.height;
+  ctxSpec.clearRect(0,0,w,h);
+
+  // background grid
+  ctxSpec.fillStyle = '#0b0f14';
+  ctxSpec.fillRect(0,0,w,h);
+  ctxSpec.strokeStyle = '#13202b';
+  ctxSpec.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    const y = (i/10)*h;
+    ctxSpec.beginPath(); ctxSpec.moveTo(0,y); ctxSpec.lineTo(w,y); ctxSpec.stroke();
+  }
+
+  // noise baseline
+  const noise = state.noiseFloor;
+  const px = new Float32Array(w);
+  for(let x=0;x<w;x++){
+    let val = noise + rnd(-1.5, 1.5);
+    px[x] = val;
+  }
+
+  // add signals (Gaussian-ish peaks)
+  // each signal broadened by param-based BW
+  for(const s of state.signals){
+    const peakX = clamp(Math.round(f2x(s.fMHz)), 0, w-1);
+    const bwHz = (s.type==='fm' ? (s.param*1000)*2 : s.type==='am' ? 10000 + s.param*100 : 2000);
+    const bwPixels = clamp(Math.round( (bwHz/1e6) * (w/state.view.span) ), 2, Math.max(2, w*0.15));
+    const sigma = bwPixels/3;
+    const power = s.powerDb;
+
+    for(let x=peakX-4*bwPixels; x<=peakX+4*bwPixels; x++){
+      if(x<0||x>=w) continue;
+      const g = Math.exp( - ((x-peakX)*(x-peakX)) / (2*sigma*sigma) );
+      const ripple = (s.type==='fm') ? Math.cos((x-peakX)/2)*0.7 : (s.type==='am' ? Math.sin((x-peakX)/3)*0.5 : 0.2);
+      const add = power*g + ripple;
+      px[x] = Math.max(px[x], add);
+    }
+  }
+
+  // smoothing
+  for(let x=0;x<w;x++){
+    smoothBuf[x] = state.smooth*smoothBuf[x] + (1-state.smooth)*px[x];
+  }
+
+  // draw filled area
+  ctxSpec.beginPath();
+  for(let x=0;x<w;x++){
+    const y = h - ((smoothBuf[x]+140)/80)*h; // map dB -140..-60 to 0..h
+    if(x===0) ctxSpec.moveTo(0,y);
+    else ctxSpec.lineTo(x,y);
+  }
+  ctxSpec.lineTo(w,h); ctxSpec.lineTo(0,h); ctxSpec.closePath();
+  const grd = ctxSpec.createLinearGradient(0,0,0,h);
+  grd.addColorStop(0,'#1c2a3b');
+  grd.addColorStop(1,'#0d131a');
+  ctxSpec.fillStyle = grd;
+  ctxSpec.fill();
+
+  // draw peaks markers
+  ctxSpec.strokeStyle = '#4fd1c5';
+  ctxSpec.lineWidth = 1.5;
+  for(const s of state.signals){
+    const x = f2x(s.fMHz);
+    ctxSpec.beginPath();
+    ctxSpec.moveTo(x, 0);
+    ctxSpec.lineTo(x, h);
+    ctxSpec.stroke();
+
+    // label
+    ctxSpec.fillStyle = '#bfecef';
+    const lbl = `${s.type.toUpperCase()} ${s.fMHz.toFixed(3)} MHz`;
+    ctxSpec.fillRect(x-44, 6, ctxSpec.measureText? (ctxSpec.measureText(lbl).width+8) : 92, 18);
+    ctxSpec.fillStyle = '#0e141b';
+    ctxSpec.fillText(lbl, x-40, 19);
+  }
+
+  // Tuner band
+  const tuneX = f2x(state.tuneMHz);
+  const bwPx = (state.bandwidthKHz/1e6) * (w/state.view.span);
+  ctxSpec.fillStyle = 'rgba(96,165,250,0.18)';
+  ctxSpec.fillRect(tuneX - bwPx/2, 0, bwPx, h);
+  ctxSpec.strokeStyle = '#60a5fa';
+  ctxSpec.beginPath();
+  ctxSpec.moveTo(tuneX,0); ctxSpec.lineTo(tuneX,h); ctxSpec.stroke();
+}
+
+// Waterfall (scrolling image)
+function renderWaterfall(){
+  const w = el.waterfall.width, h = el.waterfall.height;
+  // scroll down
+  const img = ctxWF.getImageData(0,0,w,h);
+  ctxWF.putImageData(img,0,1);
+
+  // draw new top row based on spectrum
+  for(let x=0;x<w;x++){
+    const db = smoothBuf[x];
+    // map dB to color (blue -> cyan -> yellow)
+    const t = clamp((db + 120)/40, 0, 1); // -120..-80 => 0..1
+    const r = Math.floor( clamp( 255*(t-0.5)*2, 0, 255) );
+    const g = Math.floor( clamp( 255*Math.min(t*1.3,1), 0,255) );
+    const b = Math.floor( clamp( 200*(1-t)+55, 55, 255) );
+    ctxWF.fillStyle = `rgb(${r},${g},${b})`;
+    ctxWF.fillRect(x,0,1,1);
+  }
+
+  // overlay grid
+  ctxWF.strokeStyle = 'rgba(19,32,43,.25)';
+  ctxWF.lineWidth = 1;
+  ctxWF.beginPath();
+  for(let i=0;i<=6;i++){
+    const y = (i/6)*h;
+    ctxWF.moveTo(0,y); ctxWF.lineTo(w,y);
+  }
+  ctxWF.stroke();
+}
+
+// Animation loop
+function tick(){
+  renderSpectrum();
+  renderWaterfall();
+  requestAnimationFrame(tick);
+}
+tick();
+
+// UI bindings
+function syncInputs(){
+  state.centerMHz = parseFloat(el.centerFreq.value)||state.centerMHz;
+  state.spanMHz   = parseFloat(el.span.value)||state.spanMHz;
+  state.view.center = state.centerMHz;
+  state.view.span   = clamp(state.spanMHz, 2, 200);
+  state.noiseFloor = parseFloat(el.noise.value);
+  el.noiseVal.textContent = `${state.noiseFloor} dB`;
+  state.smooth = parseFloat(el.smooth.value);
+  el.smoothVal.textContent = state.smooth.toFixed(2);
+  state.tuneMHz = parseFloat(el.tuneFreq.value)||state.tuneMHz;
+  state.bandwidthKHz = parseFloat(el.bw.value)||state.bandwidthKHz;
+}
+['input','change'].forEach(ev=>{
+  [el.centerFreq, el.span, el.noise, el.smooth, el.tuneFreq, el.bw].forEach(inp=>{
+    inp.addEventListener(ev, syncInputs);
+  });
+});
+syncInputs();
+
+// Pan & Zoom handlers on spectrum canvas
+let panning=false, px0=0, startCenter=state.view.center;
+el.spectrum.addEventListener('mousedown', (e)=>{
+  panning=true; px0=e.clientX; startCenter=state.view.center;
+});
+window.addEventListener('mouseup', ()=>{panning=false;});
+window.addEventListener('mousemove', (e)=>{
+  if(!panning) return;
+  const dx = e.clientX - px0;
+  const df = (dx / el.spectrum.width) * state.view.span;
+  state.view.center = startCenter - df;
+  el.centerFreq.value = state.view.center.toFixed(3);
+});
+
+el.spectrum.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  const mouseX = e.offsetX;
+  const fAtMouse = x2f(mouseX);
+  const zoom = Math.exp(-Math.sign(e.deltaY)*0.12); // smooth zoom
+  const newSpan = clamp(state.view.span*zoom, 1, 200);
+  // keep mouse freq under cursor
+  const frac = (fAtMouse - (state.view.center - state.view.span/2)) / state.view.span;
+  state.view.center = fAtMouse - frac*newSpan;
+  state.view.span = newSpan;
+  el.span.value = newSpan.toFixed(2);
+  el.centerFreq.value = state.view.center.toFixed(3);
+},{passive:false});
+
+el.spectrum.addEventListener('dblclick', ()=>{
+  state.view.center = state.centerMHz;
+  state.view.span = state.spanMHz;
+  el.centerFreq.value = state.centerMHz.toFixed(3);
+  el.span.value = state.spanMHz.toFixed(2);
+});
+
+// Add / clear signals
+function toneForStation(){
+  // pick a nice musical pitch
+  const scale = [220,247,262,294,330,349,392,440,494,523,587];
+  return scale[Math.floor(Math.random()*scale.length)];
+}
+function addSignal(){
+  const type = el.sigType.value; // fm/am/cw
+  const fMHz = parseFloat(el.sigFreq.value);
+  const powerDb = parseFloat(el.sigPower.value);
+  const param = parseFloat(el.sigParam.value);
+  if(!Number.isFinite(fMHz)) return;
+  const sig = { id: state.nextId++, type, fMHz, powerDb, param, toneHz: toneForStation() };
+  state.signals.push(sig);
+  renderTable();
+}
+function clearSignals(){
+  stopAllAudio();
+  state.signals = [];
+  renderTable();
+}
+el.addSig.addEventListener('click', addSignal);
+el.clearSig.addEventListener('click', clearSignals);
+
+// Signals table
+function renderTable(){
+  el.sigTable.innerHTML = '';
+  state.signals
+    .slice()
+    .sort((a,b)=>a.fMHz-b.fMHz)
+    .forEach((s,idx)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td><span class="badge">${s.type.toUpperCase()}</span></td>
+        <td>${s.fMHz.toFixed(3)}</td>
+        <td>${s.powerDb.toFixed(0)}</td>
+        <td>${s.type==='fm' ? (s.param.toFixed(0)+' kHz') : s.type==='am' ? (s.param.toFixed(0)+' %') : '—'}</td>
+        <td>${s.toneHz} Hz</td>
+        <td>
+          <div class="flex">
+            <button data-act="jump" data-id="${s.id}">Tune</button>
+            <button data-act="del" data-id="${s.id}">Hapus</button>
+          </div>
+        </td>`;
+      el.sigTable.appendChild(tr);
+    });
+  // actions
+  el.sigTable.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', (ev)=>{
+      const id = parseInt(ev.currentTarget.dataset.id,10);
+      const act= ev.currentTarget.dataset.act;
+      if(act==='del'){
+        stopAudio(id);
+        state.signals = state.signals.filter(s=>s.id!==id);
+        renderTable();
+      }else if(act==='jump'){
+        const s = state.signals.find(x=>x.id===id);
+        if(!s) return;
+        state.tuneMHz = s.fMHz;
+        el.tuneFreq.value = s.fMHz.toFixed(3);
+        tuneNow();
+      }
+    })
+  })
+}
+renderTable();
+
+// Audio synth (simple & light)
+function ensureAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.9;
+  masterGain.connect(audioCtx.destination);
+}
+function playStation(sigId, toneHz){
+  ensureAudio();
+  // if already playing, do nothing
+  if(stationOscillators.has(sigId)) return;
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = toneHz;
+
+  let gain = audioCtx.createGain();
+  gain.gain.value = 0.0; // fade in
+  osc.connect(gain).connect(masterGain);
+  osc.start();
+
+  // For AM: add LFO to create depth
+  const sig = state.signals.find(s=>s.id===sigId);
+  let lfo = null;
+  if(sig && sig.type==='am'){
+    lfo = audioCtx.createOscillator();
+    lfo.type='sine';
+    lfo.frequency.value = 2 + Math.random()*4; // 2-6 Hz slow AM
+    const amp = audioCtx.createGain();
+    amp.gain.value = (sig.param/100)*0.5; // depth -> gain modulation
+    lfo.connect(amp).connect(gain.gain);
+    lfo.start();
+  }
+
+  // fade in
+  gain.gain.setTargetAtTime(0.6, audioCtx.currentTime, 0.15);
+
+  stationOscillators.set(sigId, {osc, gain, lfo});
+}
+function stopAudio(id){
+  const obj = stationOscillators.get(id);
+  if(!obj) return;
+  obj.gain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.1);
+  setTimeout(()=>{
+    try{obj.osc.stop()}catch{}
+    try{obj.lfo && obj.lfo.stop()}catch{}
+    obj.osc.disconnect(); obj.gain.disconnect();
+    if(obj.lfo){ obj.lfo.disconnect(); }
+  }, 200);
+  stationOscillators.delete(id);
+}
+function stopAllAudio(){
+  Array.from(stationOscillators.keys()).forEach(stopAudio);
+}
+
+// Tuner: pick nearest signal within BW
+function findTunedSignal(){
+  const bwMHz = state.bandwidthKHz/1000;
+  let nearest = null, bestDf = Infinity;
+  for(const s of state.signals){
+    const df = Math.abs(s.fMHz - state.tuneMHz);
+    if(df <= bwMHz/2 && df < bestDf){
+      nearest = s; bestDf = df;
+    }
+  }
+  return nearest;
+}
+function tuneNow(){
+  const st = findTunedSignal();
+  stopAllAudio();
+  if(!st){
+    // no station within BW
+    return;
+  }
+  // play its tone; for FM, slightly wobble the pitch by deviation to simulate modulation feel
+  if(st.type==='fm'){
+    // emulate small vibrato
+    playStation(st.id, st.toneHz);
+    // tiny freq sweeps
+    const obj = stationOscillators.get(st.id);
+    if(obj){
+      const base = st.toneHz;
+      const t = audioCtx.currentTime;
+      obj.osc.frequency.cancelScheduledValues(t);
+      obj.osc.frequency.setValueAtTime(base, t);
+      // periodic glide
+      obj.osc.frequency.linearRampToValueAtTime(base*1.02, t+0.6);
+      obj.osc.frequency.linearRampToValueAtTime(base*0.98, t+1.2);
+      obj.osc.frequency.linearRampToValueAtTime(base, t+1.8);
+    }
+  } else if(st.type==='am' || st.type==='cw'){
+    playStation(st.id, st.toneHz);
+  }
+}
+el.tuneBtn.addEventListener('click', tuneNow);
+el.stopBtn.addEventListener('click', stopAllAudio);
+
+// Initialize: add a few demo stations
+(function seed(){
+  const demo = [
+    {type:'fm', f: 100.1, p:-58, dev: 75},
+    {type:'fm', f: 101.7, p:-65, dev: 50},
+    {type:'am', f:  98.6, p:-70, dep: 40},
+    {type:'cw', f:  99.4, p:-62}
+  ];
+  demo.forEach(d=>{
+    state.signals.push({
+      id: state.nextId++,
+      type: d.type,
+      fMHz: d.f,
+      powerDb: d.p,
+      param: d.dev ?? d.dep ?? 0,
+      toneHz: toneForStation()
+    });
+  });
+  renderTable();
+})();
+</script>
 </body>
 </html>
-
