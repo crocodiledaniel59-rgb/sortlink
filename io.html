@@ -1,647 +1,660 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Radio Signal Simulator — Spectrum, Waterfall, AM/FM Tuner</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel Music – Spotify-lite</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{
-    --bg:#0b0f14; --panel:#121820; --ink:#e6eef7; --muted:#9fb1c7; --accent:#4fd1c5; --accent2:#60a5fa; --warn:#f59e0b;
-  }
-  *{box-sizing:border-box}
+  :root { color-scheme: dark; }
   html,body{height:100%}
-  body{
-    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,sans-serif;
-    color:var(--ink); background:linear-gradient(180deg,#0b0f14,#0a0d12);
-    display:flex; flex-direction:column; gap:12px;
-  }
-  header{
-    padding:14px 16px; background:linear-gradient(180deg,#10151d,#0e131a);
-    border-bottom:1px solid #1d2633; position:sticky; top:0; z-index:5;
-  }
-  h1{font-size:18px; margin:0; letter-spacing:.3px; display:flex; align-items:center; gap:10px}
-  h1 .dot{width:10px;height:10px;border-radius:50%; background:radial-gradient(circle at 30% 30%, #7fffd4, #277e76)}
-  main{padding:0 12px 16px; display:grid; gap:12px}
-  .grid{
-    display:grid; grid-template-columns: 1.5fr 1fr; gap:12px;
-  }
-  .card{
-    background:var(--panel); border:1px solid #1b2431; border-radius:16px; overflow:hidden; box-shadow:0 0 0 1px #0c1219 inset, 0 8px 24px rgba(0,0,0,.35);
-  }
-  .card h2{
-    margin:0; font-size:14px; font-weight:600; color:#cfe0f5; letter-spacing:.25px;
-    padding:10px 12px; border-bottom:1px solid #1b2431; background:linear-gradient(180deg,#0f151d,#0d1219);
-  }
-  .card-body{padding:12px}
-  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  .row > *{flex:1}
-  label{font-size:12px; color:var(--muted); margin-bottom:4px; display:block}
-  input[type="number"],input[type="text"],select{
-    width:100%; background:#0c1219; color:var(--ink); border:1px solid #1c2431; border-radius:10px; padding:8px 10px;
-    outline:none; transition:border .15s, box-shadow .15s;
-  }
-  input[type="number"]:focus, input[type="text"]:focus, select:focus{
-    border-color:#2a3a50; box-shadow:0 0 0 3px rgba(80,130,200,.15);
-  }
-  input[type="range"]{width:100%}
-  button{
-    background:linear-gradient(180deg,#2a394d,#223044); color:var(--ink);
-    border:1px solid #2b3a51; border-radius:10px; padding:8px 12px; cursor:pointer;
-    font-weight:600; letter-spacing:.2px;
-  }
-  button:hover{filter:brightness(1.07)}
-  button.accent{background:linear-gradient(180deg,#1c6a64,#17534f); border-color:#1f6e67}
-  button.warn{background:linear-gradient(180deg,#7c5b18,#6b4d14); border-color:#8a6418}
-  .muted{color:var(--muted); font-size:12px}
-  canvas{display:block; width:100%; height:240px; background:#0b0f14}
-  #waterfall{height:220px}
-  table{width:100%; border-collapse:collapse; font-size:13px}
-  th, td{padding:8px 8px; border-bottom:1px solid #1d2633}
-  th{color:#cfe0f5; font-weight:600; text-align:left; background:#0e141b; position:sticky; top:0}
-  td .badge{padding:2px 6px; border-radius:999px; font-size:11px; background:#13202b; border:1px solid #1f384d; color:#cfe0f5}
-  .flex{display:flex; align-items:center; gap:8px}
-  .right{margin-left:auto}
-  .pill{
-    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #243246;
-    background:linear-gradient(180deg,#0e151e,#0c1219); color:#bcd0e9; font-size:12px;
-  }
-  .help{color:#8fb0d3; font-size:12px}
-  .foot{padding:8px 12px; border-top:1px solid #1b2431; color:#8aa2bf; background:linear-gradient(180deg,#0f151d,#0d1219); font-size:12px}
-  .range-wrap{display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center}
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
+  .scroll-smooth::-webkit-scrollbar{height:8px;width:8px}
+  .scroll-smooth::-webkit-scrollbar-thumb{background:#374151;border-radius:10px}
+  .btn { @apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold transition active:scale-[.98]; }
+  .btn-ghost { @apply hover:bg-slate-700/60; }
+  .btn-primary { @apply bg-emerald-500 text-black hover:bg-emerald-400; }
+  .btn-danger { @apply bg-rose-500 text-white hover:bg-rose-400; }
+  .chip { @apply text-xs px-2 py-1 rounded-full bg-slate-700/60; }
+  .card { @apply rounded-2xl bg-slate-800/80 backdrop-blur border border-slate-700/60 shadow-lg; }
+  .row { @apply grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2 px-3 rounded-xl hover:bg-slate-700/50; }
+  .cover { @apply w-12 h-12 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-300 text-xs overflow-hidden; }
+  .ticker { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .range { -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:999px; background:#374151; outline:none;}
+  .range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:white; cursor:pointer; box-shadow:0 0 0 4px rgba(255,255,255,.15); }
+  .range::-moz-range-thumb{ width:14px;height:14px;border:none;border-radius:50%;background:white; }
+  .dropzone { @apply border-2 border-dashed rounded-2xl border-slate-600 hover:border-emerald-400 transition cursor-pointer; }
 </style>
 </head>
-<body>
-  <header>
-    <h1><span class="dot"></span> Radio Signal Simulator <span class="pill">Spectrum + Waterfall + AM/FM Tuner</span></h1>
+<body class="bg-slate-900 text-slate-100">
+
+<!-- App Shell -->
+<div class="min-h-screen grid grid-rows-[auto_1fr_auto]">
+
+  <!-- Topbar -->
+  <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
+      <div class="flex items-center gap-2">
+        <div class="size-8 rounded-xl bg-emerald-500"></div>
+        <h1 class="text-lg font-bold">Daniel Music</h1>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <input id="q" type="search" placeholder="Cari lagu/artist/album…" class="w-64 max-w-[50vw] rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+        <button id="btn-shuffle" class="btn btn-ghost" title="Shuffle (S)">🔀</button>
+        <button id="btn-repeat" class="btn btn-ghost" title="Repeat (R)">🔁</button>
+        <button id="btn-clear" class="btn btn-danger" title="Bersihkan daftar">Clear</button>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <div class="grid">
-      <!-- LEFT: Scopes -->
-      <section class="card">
-        <h2>Spektrum & Waterfall</h2>
-        <div class="card-body" style="padding:0">
-          <canvas id="spectrum" width="1400" height="260"></canvas>
-          <canvas id="waterfall" width="1400" height="220"></canvas>
-          <div class="foot">
-            Scroll untuk zoom (horizontal), drag untuk pan. Klik dua kali untuk reset view.
-          </div>
+  <!-- Main -->
+  <main class="mx-auto max-w-6xl w-full grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 p-4">
+
+    <!-- Sidebar -->
+    <aside class="card p-4 h-fit space-y-4">
+      <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-300">Library</h2>
+
+      <div class="space-y-2">
+        <label class="btn btn-primary w-full cursor-pointer">
+          <input id="file-input" type="file" accept="audio/*" multiple class="hidden">
+          + Tambah Lagu (File)
+        </label>
+
+        <button id="btn-add-url" class="btn btn-ghost w-full">+ Tambah lewat URL</button>
+
+        <label class="btn btn-ghost w-full cursor-pointer" title="Import file .dmlib (ekspor)">
+          <input id="import-input" type="file" accept=".dmlib,application/json" class="hidden">
+          ⤒ Import Library
+        </label>
+
+        <button id="btn-export" class="btn btn-ghost w-full">⤓ Export Library</button>
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-300">Playlist</h3>
+        <div class="flex gap-2">
+          <input id="new-playlist-name" class="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Nama playlist">
+          <button id="btn-create-playlist" class="btn btn-primary">Buat</button>
         </div>
-      </section>
+        <ul id="playlist-list" class="space-y-1 text-sm"></ul>
+      </div>
 
-      <!-- RIGHT: Controls -->
-      <section class="card">
-        <h2>Kontrol & Tuner</h2>
-        <div class="card-body">
-          <div class="row">
-            <div>
-              <label>Center Freq (MHz)</label>
-              <input id="centerFreq" type="number" step="0.1" value="100.0">
-            </div>
-            <div>
-              <label>Span / Width (MHz)</label>
-              <input id="span" type="number" step="1" value="20">
-            </div>
-          </div>
+      <div class="space-y-2">
+        <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-300">Tips</h3>
+        <ul class="text-xs text-slate-300 list-disc pl-4 space-y-1">
+          <li>Drag & drop file ke area lagu</li>
+          <li>Space: Play/Pause • ←/→: -/+5s</li>
+          <li>N/P: Next/Prev • S: Shuffle • R: Repeat</li>
+        </ul>
+      </div>
+    </aside>
 
-          <div class="row">
-            <div>
-              <label>Noise Floor</label>
-              <div class="range-wrap">
-                <input id="noise" type="range" min="-120" max="-60" step="1" value="-95">
-                <span class="muted" id="noiseVal">-95 dB</span>
-              </div>
-            </div>
-            <div>
-              <label>FFT Smoothing</label>
-              <div class="range-wrap">
-                <input id="smooth" type="range" min="0" max="0.95" step="0.05" value="0.35">
-                <span class="muted" id="smoothVal">0.35</span>
-              </div>
-            </div>
-          </div>
+    <!-- Library & Dropzone -->
+    <section class="space-y-4">
+      <div id="dropzone" class="dropzone p-6 text-center">
+        <p class="text-sm text-slate-300">Seret & jatuhkan file lagu ke sini, atau gunakan tombol di sidebar.</p>
+      </div>
 
-          <hr style="border:none;border-top:1px solid #1b2431; margin:12px 0">
-
-          <div class="row">
-            <div>
-              <label>Tuner Frequency (MHz)</label>
-              <input id="tuneFreq" type="number" step="0.01" value="100.1">
-            </div>
-            <div>
-              <label>Bandwidth (kHz)</label>
-              <input id="bw" type="number" step="1" value="200">
-            </div>
-          </div>
-
-          <div class="row">
-            <button id="tuneBtn" class="accent">Tune & Play</button>
-            <button id="stopBtn">Stop</button>
-            <span class="help">Tuner akan “mengunci” ke sinyal FM/AM terdekat dalam bandwidth.</span>
-          </div>
-
-          <hr style="border:none;border-top:1px solid #1b2431; margin:12px 0">
-
-          <div class="row">
-            <div>
-              <label>Jenis Sinyal</label>
-              <select id="sigType">
-                <option value="fm">FM</option>
-                <option value="am">AM</option>
-                <option value="cw">Carrier (CW)</option>
-              </select>
-            </div>
-            <div>
-              <label>Freq (MHz)</label>
-              <input id="sigFreq" type="number" step="0.01" value="100.1">
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Power (dB)</label>
-              <input id="sigPower" type="number" step="1" value="-60">
-            </div>
-            <div>
-              <label>FM Dev (kHz) / AM Depth (%)</label>
-              <input id="sigParam" type="number" step="1" value="75">
-            </div>
-          </div>
-
-          <div class="row">
-            <button id="addSig" class="accent">Tambah Sinyal</button>
-            <button id="clearSig" class="warn">Hapus Semua</button>
-            <span class="right muted">Tips: bikin beberapa FM “stasiun” biar seru.</span>
-          </div>
+      <!-- Current playlist header -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold" id="view-title">Semua Lagu</h2>
+          <p class="text-sm text-slate-400" id="view-sub">0 lagu</p>
         </div>
-      </section>
-    </div>
-
-    <!-- Signals table -->
-    <section class="card">
-      <h2>Daftar Sinyal Aktif</h2>
-      <div class="card-body" style="padding:0">
-        <div style="max-height:260px; overflow:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Tipe</th>
-                <th>Freq (MHz)</th>
-                <th>Power (dB)</th>
-                <th>Param</th>
-                <th>Audio</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="sigTable"></tbody>
-          </table>
-        </div>
-        <div class="foot">
-          Param = <b>FM Dev</b> (kHz) untuk FM, <b>AM Depth</b> (%) untuk AM, <b>—</b> untuk CW.
+        <div class="flex items-center gap-2">
+          <span class="chip" id="chip-shuffle">Shuffle: Off</span>
+          <span class="chip" id="chip-repeat">Repeat: Off</span>
         </div>
       </div>
+
+      <!-- Tracks -->
+      <div id="track-list" class="card p-2 max-h-[55vh] overflow-auto scroll-smooth"></div>
     </section>
   </main>
 
+  <!-- Player -->
+  <footer class="sticky bottom-0 z-20 border-t border-slate-800 bg-slate-900/90 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4 py-3 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 items-center">
+      <!-- Now playing -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div id="np-cover" class="cover">♪</div>
+        <div class="min-w-0">
+          <div id="np-title" class="ticker font-semibold text-sm">—</div>
+          <div id="np-artist" class="ticker text-xs text-slate-400">—</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="flex items-center gap-2">
+          <button id="prev" class="btn btn-ghost" title="Prev (P)">⏮️</button>
+          <button id="play" class="btn btn-primary w-12" title="Play/Pause (Space)">▶️</button>
+          <button id="next" class="btn btn-ghost" title="Next (N)">⏭️</button>
+        </div>
+        <div class="w-full md:w-[480px] flex items-center gap-2 text-xs text-slate-300">
+          <span id="cur">0:00</span>
+          <input id="seek" type="range" min="0" max="1000" value="0" class="range">
+          <span id="dur">0:00</span>
+        </div>
+      </div>
+
+      <!-- Volume -->
+      <div class="flex items-center gap-2 justify-self-end">
+        <button id="mute" class="btn btn-ghost" title="Mute">🔈</button>
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="1" class="range w-40">
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Hidden audio element -->
+<audio id="audio"></audio>
+
 <script>
-/* ===========================================================
-   Radio Signal Simulator — logical model
-   - Spectrum & waterfall rendering
-   - Add/remove FM/AM/CW signals
-   - Tuner with simple audio synthesis (fake demod)
-   =========================================================== */
+/* ========== State & Storage ========== */
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
 const state = {
-  centerMHz: 100.0,
-  spanMHz:   20.0,
-  noiseFloor: -95, // dB
-  smooth: 0.35,
-  signals: [], // {id,type,fMHz,powerDb,param, toneHz}
-  nextId: 1,
-  tuneMHz: 100.1,
-  bandwidthKHz: 200,
-  view: { // for pan/zoom
-    center: 100.0, span: 20.0,
-  }
+  library: /** @type {Track[]} */ ([]),
+  playlists: /** @type {Record<string,string[]>} */ ({}), // name -> trackIds
+  view: { type: 'all', name: 'Semua Lagu' }, // or {type:'playlist', name}
+  queue: /** @type {string[]} */ ( [] ),
+  idx: -1,
+  shuffle: false,
+  repeat: 'off', // 'off' | 'one' | 'all'
 };
 
-// DOM
-const el = {
-  spectrum: document.getElementById('spectrum'),
-  waterfall: document.getElementById('waterfall'),
-  centerFreq: document.getElementById('centerFreq'),
-  span: document.getElementById('span'),
-  noise: document.getElementById('noise'),
-  noiseVal: document.getElementById('noiseVal'),
-  smooth: document.getElementById('smooth'),
-  smoothVal: document.getElementById('smoothVal'),
-  tuneFreq: document.getElementById('tuneFreq'),
-  bw: document.getElementById('bw'),
-  tuneBtn: document.getElementById('tuneBtn'),
-  stopBtn: document.getElementById('stopBtn'),
-  sigType: document.getElementById('sigType'),
-  sigFreq: document.getElementById('sigFreq'),
-  sigPower: document.getElementById('sigPower'),
-  sigParam: document.getElementById('sigParam'),
-  addSig: document.getElementById('addSig'),
-  clearSig: document.getElementById('clearSig'),
-  sigTable: document.getElementById('sigTable'),
+const STORAGE_KEY = 'daniel-music-v1';
+function save() {
+  const payload = {
+    library: state.library.map(t => ({...t, blob: undefined, objectUrl: undefined})),
+    playlists: state.playlists,
+    prefs: { shuffle: state.shuffle, repeat: state.repeat }
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    state.library = data.library || [];
+    state.playlists = data.playlists || {};
+    state.shuffle = data.prefs?.shuffle ?? false;
+    state.repeat = data.prefs?.repeat ?? 'off';
+  } catch {}
+}
+
+/* ========== Types ========== */
+/**
+ * @typedef {Object} Track
+ * @property {string} id
+ * @property {string} title
+ * @property {string} artist
+ * @property {string} album
+ * @property {string} src     // url atau objectURL
+ * @property {string} kind    // 'url' | 'file'
+ * @property {string=} cover
+ * @property {number=} dur
+ */
+
+/* ========== UI bind ========== */
+const audio = $('#audio');
+const elTrackList = $('#track-list');
+const elViewTitle = $('#view-title');
+const elViewSub = $('#view-sub');
+const elChipShuffle = $('#chip-shuffle');
+const elChipRepeat = $('#chip-repeat');
+const elQ = $('#q');
+
+const elPlay = $('#play');
+const elPrev = $('#prev');
+const elNext = $('#next');
+const elSeek = $('#seek');
+const elCur = $('#cur');
+const elDur = $('#dur');
+const elVol = $('#vol');
+const elMute = $('#mute');
+
+const elNPCover = $('#np-cover');
+const elNPTitle = $('#np-title');
+const elNPArtist = $('#np-artist');
+
+const elShuffle = $('#btn-shuffle');
+const elRepeat = $('#btn-repeat');
+const elClear = $('#btn-clear');
+
+const elFile = $('#file-input');
+const elAddUrl = $('#btn-add-url');
+const elImport = $('#import-input');
+const elExport = $('#btn-export');
+
+const elDropzone = $('#dropzone');
+
+const elPlList = $('#playlist-list');
+const elPlName = $('#new-playlist-name');
+const elPlCreate = $('#btn-create-playlist');
+
+load();
+
+/* ========== Helpers ========== */
+const uid = () => Math.random().toString(36).slice(2,10);
+const fmtTime = s => {
+  if(!isFinite(s)) return '0:00';
+  s = Math.max(0, s|0);
+  const m = (s/60|0), r = (s%60|0);
+  return m + ':' + String(r).padStart(2,'0');
 };
-
-// Canvas ctx
-const ctxSpec = el.spectrum.getContext('2d');
-const ctxWF   = el.waterfall.getContext('2d');
-
-// Audio
-let audioCtx = null;
-let masterGain = null;
-const stationOscillators = new Map(); // id -> {osc, gain, mod?}
-
-// Utils
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const rnd = (a,b)=> a + Math.random()*(b-a);
-
-// Map freq (MHz) -> x pixel (0..w)
-function f2x(fMHz){
-  const {center, span} = state.view;
-  const start = center - span/2;
-  return ( (fMHz - start) / span ) * el.spectrum.width;
-}
-// Map pixel -> freq (MHz)
-function x2f(x){
-  const {center, span} = state.view;
-  const start = center - span/2;
-  return start + (x / el.spectrum.width) * span;
-}
-
-// Rendering spectrum line from signals + noise
-let smoothBuf = new Float32Array(1400).fill(-120);
-function renderSpectrum(){
-  const w = el.spectrum.width, h = el.spectrum.height;
-  ctxSpec.clearRect(0,0,w,h);
-
-  // background grid
-  ctxSpec.fillStyle = '#0b0f14';
-  ctxSpec.fillRect(0,0,w,h);
-  ctxSpec.strokeStyle = '#13202b';
-  ctxSpec.lineWidth = 1;
-  for(let i=0;i<=10;i++){
-    const y = (i/10)*h;
-    ctxSpec.beginPath(); ctxSpec.moveTo(0,y); ctxSpec.lineTo(w,y); ctxSpec.stroke();
-  }
-
-  // noise baseline
-  const noise = state.noiseFloor;
-  const px = new Float32Array(w);
-  for(let x=0;x<w;x++){
-    let val = noise + rnd(-1.5, 1.5);
-    px[x] = val;
-  }
-
-  // add signals (Gaussian-ish peaks)
-  // each signal broadened by param-based BW
-  for(const s of state.signals){
-    const peakX = clamp(Math.round(f2x(s.fMHz)), 0, w-1);
-    const bwHz = (s.type==='fm' ? (s.param*1000)*2 : s.type==='am' ? 10000 + s.param*100 : 2000);
-    const bwPixels = clamp(Math.round( (bwHz/1e6) * (w/state.view.span) ), 2, Math.max(2, w*0.15));
-    const sigma = bwPixels/3;
-    const power = s.powerDb;
-
-    for(let x=peakX-4*bwPixels; x<=peakX+4*bwPixels; x++){
-      if(x<0||x>=w) continue;
-      const g = Math.exp( - ((x-peakX)*(x-peakX)) / (2*sigma*sigma) );
-      const ripple = (s.type==='fm') ? Math.cos((x-peakX)/2)*0.7 : (s.type==='am' ? Math.sin((x-peakX)/3)*0.5 : 0.2);
-      const add = power*g + ripple;
-      px[x] = Math.max(px[x], add);
-    }
-  }
-
-  // smoothing
-  for(let x=0;x<w;x++){
-    smoothBuf[x] = state.smooth*smoothBuf[x] + (1-state.smooth)*px[x];
-  }
-
-  // draw filled area
-  ctxSpec.beginPath();
-  for(let x=0;x<w;x++){
-    const y = h - ((smoothBuf[x]+140)/80)*h; // map dB -140..-60 to 0..h
-    if(x===0) ctxSpec.moveTo(0,y);
-    else ctxSpec.lineTo(x,y);
-  }
-  ctxSpec.lineTo(w,h); ctxSpec.lineTo(0,h); ctxSpec.closePath();
-  const grd = ctxSpec.createLinearGradient(0,0,0,h);
-  grd.addColorStop(0,'#1c2a3b');
-  grd.addColorStop(1,'#0d131a');
-  ctxSpec.fillStyle = grd;
-  ctxSpec.fill();
-
-  // draw peaks markers
-  ctxSpec.strokeStyle = '#4fd1c5';
-  ctxSpec.lineWidth = 1.5;
-  for(const s of state.signals){
-    const x = f2x(s.fMHz);
-    ctxSpec.beginPath();
-    ctxSpec.moveTo(x, 0);
-    ctxSpec.lineTo(x, h);
-    ctxSpec.stroke();
-
-    // label
-    ctxSpec.fillStyle = '#bfecef';
-    const lbl = `${s.type.toUpperCase()} ${s.fMHz.toFixed(3)} MHz`;
-    ctxSpec.fillRect(x-44, 6, ctxSpec.measureText? (ctxSpec.measureText(lbl).width+8) : 92, 18);
-    ctxSpec.fillStyle = '#0e141b';
-    ctxSpec.fillText(lbl, x-40, 19);
-  }
-
-  // Tuner band
-  const tuneX = f2x(state.tuneMHz);
-  const bwPx = (state.bandwidthKHz/1e6) * (w/state.view.span);
-  ctxSpec.fillStyle = 'rgba(96,165,250,0.18)';
-  ctxSpec.fillRect(tuneX - bwPx/2, 0, bwPx, h);
-  ctxSpec.strokeStyle = '#60a5fa';
-  ctxSpec.beginPath();
-  ctxSpec.moveTo(tuneX,0); ctxSpec.lineTo(tuneX,h); ctxSpec.stroke();
-}
-
-// Waterfall (scrolling image)
-function renderWaterfall(){
-  const w = el.waterfall.width, h = el.waterfall.height;
-  // scroll down
-  const img = ctxWF.getImageData(0,0,w,h);
-  ctxWF.putImageData(img,0,1);
-
-  // draw new top row based on spectrum
-  for(let x=0;x<w;x++){
-    const db = smoothBuf[x];
-    // map dB to color (blue -> cyan -> yellow)
-    const t = clamp((db + 120)/40, 0, 1); // -120..-80 => 0..1
-    const r = Math.floor( clamp( 255*(t-0.5)*2, 0, 255) );
-    const g = Math.floor( clamp( 255*Math.min(t*1.3,1), 0,255) );
-    const b = Math.floor( clamp( 200*(1-t)+55, 55, 255) );
-    ctxWF.fillStyle = `rgb(${r},${g},${b})`;
-    ctxWF.fillRect(x,0,1,1);
-  }
-
-  // overlay grid
-  ctxWF.strokeStyle = 'rgba(19,32,43,.25)';
-  ctxWF.lineWidth = 1;
-  ctxWF.beginPath();
-  for(let i=0;i<=6;i++){
-    const y = (i/6)*h;
-    ctxWF.moveTo(0,y); ctxWF.lineTo(w,y);
-  }
-  ctxWF.stroke();
-}
-
-// Animation loop
-function tick(){
-  renderSpectrum();
-  renderWaterfall();
-  requestAnimationFrame(tick);
-}
-tick();
-
-// UI bindings
-function syncInputs(){
-  state.centerMHz = parseFloat(el.centerFreq.value)||state.centerMHz;
-  state.spanMHz   = parseFloat(el.span.value)||state.spanMHz;
-  state.view.center = state.centerMHz;
-  state.view.span   = clamp(state.spanMHz, 2, 200);
-  state.noiseFloor = parseFloat(el.noise.value);
-  el.noiseVal.textContent = `${state.noiseFloor} dB`;
-  state.smooth = parseFloat(el.smooth.value);
-  el.smoothVal.textContent = state.smooth.toFixed(2);
-  state.tuneMHz = parseFloat(el.tuneFreq.value)||state.tuneMHz;
-  state.bandwidthKHz = parseFloat(el.bw.value)||state.bandwidthKHz;
-}
-['input','change'].forEach(ev=>{
-  [el.centerFreq, el.span, el.noise, el.smooth, el.tuneFreq, el.bw].forEach(inp=>{
-    inp.addEventListener(ev, syncInputs);
+function setMediaSession(track){
+  if(!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: track.title || 'Unknown',
+    artist: track.artist || 'Unknown',
+    album: track.album || '',
+    artwork: track.cover ? [{src: track.cover, sizes:'512x512', type:'image/png'}] : []
   });
-});
-syncInputs();
-
-// Pan & Zoom handlers on spectrum canvas
-let panning=false, px0=0, startCenter=state.view.center;
-el.spectrum.addEventListener('mousedown', (e)=>{
-  panning=true; px0=e.clientX; startCenter=state.view.center;
-});
-window.addEventListener('mouseup', ()=>{panning=false;});
-window.addEventListener('mousemove', (e)=>{
-  if(!panning) return;
-  const dx = e.clientX - px0;
-  const df = (dx / el.spectrum.width) * state.view.span;
-  state.view.center = startCenter - df;
-  el.centerFreq.value = state.view.center.toFixed(3);
-});
-
-el.spectrum.addEventListener('wheel', (e)=>{
-  e.preventDefault();
-  const mouseX = e.offsetX;
-  const fAtMouse = x2f(mouseX);
-  const zoom = Math.exp(-Math.sign(e.deltaY)*0.12); // smooth zoom
-  const newSpan = clamp(state.view.span*zoom, 1, 200);
-  // keep mouse freq under cursor
-  const frac = (fAtMouse - (state.view.center - state.view.span/2)) / state.view.span;
-  state.view.center = fAtMouse - frac*newSpan;
-  state.view.span = newSpan;
-  el.span.value = newSpan.toFixed(2);
-  el.centerFreq.value = state.view.center.toFixed(3);
-},{passive:false});
-
-el.spectrum.addEventListener('dblclick', ()=>{
-  state.view.center = state.centerMHz;
-  state.view.span = state.spanMHz;
-  el.centerFreq.value = state.centerMHz.toFixed(3);
-  el.span.value = state.spanMHz.toFixed(2);
-});
-
-// Add / clear signals
-function toneForStation(){
-  // pick a nice musical pitch
-  const scale = [220,247,262,294,330,349,392,440,494,523,587];
-  return scale[Math.floor(Math.random()*scale.length)];
+  navigator.mediaSession.setActionHandler('play', play);
+  navigator.mediaSession.setActionHandler('pause', pause);
+  navigator.mediaSession.setActionHandler('previoustrack', prev);
+  navigator.mediaSession.setActionHandler('nexttrack', next);
+  navigator.mediaSession.setActionHandler('seekbackward', () => { audio.currentTime = Math.max(0,audio.currentTime-5); });
+  navigator.mediaSession.setActionHandler('seekforward', () => { audio.currentTime = Math.min(audio.duration||0,audio.currentTime+5); });
 }
-function addSignal(){
-  const type = el.sigType.value; // fm/am/cw
-  const fMHz = parseFloat(el.sigFreq.value);
-  const powerDb = parseFloat(el.sigPower.value);
-  const param = parseFloat(el.sigParam.value);
-  if(!Number.isFinite(fMHz)) return;
-  const sig = { id: state.nextId++, type, fMHz, powerDb, param, toneHz: toneForStation() };
-  state.signals.push(sig);
-  renderTable();
-}
-function clearSignals(){
-  stopAllAudio();
-  state.signals = [];
-  renderTable();
-}
-el.addSig.addEventListener('click', addSignal);
-el.clearSig.addEventListener('click', clearSignals);
 
-// Signals table
-function renderTable(){
-  el.sigTable.innerHTML = '';
-  state.signals
-    .slice()
-    .sort((a,b)=>a.fMHz-b.fMHz)
-    .forEach((s,idx)=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${idx+1}</td>
-        <td><span class="badge">${s.type.toUpperCase()}</span></td>
-        <td>${s.fMHz.toFixed(3)}</td>
-        <td>${s.powerDb.toFixed(0)}</td>
-        <td>${s.type==='fm' ? (s.param.toFixed(0)+' kHz') : s.type==='am' ? (s.param.toFixed(0)+' %') : '—'}</td>
-        <td>${s.toneHz} Hz</td>
-        <td>
-          <div class="flex">
-            <button data-act="jump" data-id="${s.id}">Tune</button>
-            <button data-act="del" data-id="${s.id}">Hapus</button>
-          </div>
-        </td>`;
-      el.sigTable.appendChild(tr);
-    });
-  // actions
-  el.sigTable.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', (ev)=>{
-      const id = parseInt(ev.currentTarget.dataset.id,10);
-      const act= ev.currentTarget.dataset.act;
-      if(act==='del'){
-        stopAudio(id);
-        state.signals = state.signals.filter(s=>s.id!==id);
-        renderTable();
-      }else if(act==='jump'){
-        const s = state.signals.find(x=>x.id===id);
-        if(!s) return;
-        state.tuneMHz = s.fMHz;
-        el.tuneFreq.value = s.fMHz.toFixed(3);
-        tuneNow();
-      }
-    })
-  })
-}
-renderTable();
-
-// Audio synth (simple & light)
-function ensureAudio(){
-  if(audioCtx) return;
-  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = 0.9;
-  masterGain.connect(audioCtx.destination);
-}
-function playStation(sigId, toneHz){
-  ensureAudio();
-  // if already playing, do nothing
-  if(stationOscillators.has(sigId)) return;
-  const osc = audioCtx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.value = toneHz;
-
-  let gain = audioCtx.createGain();
-  gain.gain.value = 0.0; // fade in
-  osc.connect(gain).connect(masterGain);
-  osc.start();
-
-  // For AM: add LFO to create depth
-  const sig = state.signals.find(s=>s.id===sigId);
-  let lfo = null;
-  if(sig && sig.type==='am'){
-    lfo = audioCtx.createOscillator();
-    lfo.type='sine';
-    lfo.frequency.value = 2 + Math.random()*4; // 2-6 Hz slow AM
-    const amp = audioCtx.createGain();
-    amp.gain.value = (sig.param/100)*0.5; // depth -> gain modulation
-    lfo.connect(amp).connect(gain.gain);
-    lfo.start();
+/* ========== Library rendering ========== */
+function renderLibrary() {
+  // title
+  if(state.view.type==='all'){
+    elViewTitle.textContent = 'Semua Lagu';
+    elViewSub.textContent = `${state.library.length} lagu`;
+    state.queue = state.library.map(t=>t.id);
+  } else {
+    elViewTitle.textContent = `Playlist • ${state.view.name}`;
+    const ids = state.playlists[state.view.name] || [];
+    elViewSub.textContent = `${ids.length} lagu`;
+    state.queue = ids.slice();
   }
 
-  // fade in
-  gain.gain.setTargetAtTime(0.6, audioCtx.currentTime, 0.15);
+  // filter
+  const q = elQ.value.trim().toLowerCase();
+  const ids = state.queue.filter(id=>{
+    const t = byId(id);
+    const hay = [t.title,t.artist,t.album].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
 
-  stationOscillators.set(sigId, {osc, gain, lfo});
-}
-function stopAudio(id){
-  const obj = stationOscillators.get(id);
-  if(!obj) return;
-  obj.gain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.1);
-  setTimeout(()=>{
-    try{obj.osc.stop()}catch{}
-    try{obj.lfo && obj.lfo.stop()}catch{}
-    obj.osc.disconnect(); obj.gain.disconnect();
-    if(obj.lfo){ obj.lfo.disconnect(); }
-  }, 200);
-  stationOscillators.delete(id);
-}
-function stopAllAudio(){
-  Array.from(stationOscillators.keys()).forEach(stopAudio);
-}
-
-// Tuner: pick nearest signal within BW
-function findTunedSignal(){
-  const bwMHz = state.bandwidthKHz/1000;
-  let nearest = null, bestDf = Infinity;
-  for(const s of state.signals){
-    const df = Math.abs(s.fMHz - state.tuneMHz);
-    if(df <= bwMHz/2 && df < bestDf){
-      nearest = s; bestDf = df;
-    }
-  }
-  return nearest;
-}
-function tuneNow(){
-  const st = findTunedSignal();
-  stopAllAudio();
-  if(!st){
-    // no station within BW
+  // render rows
+  elTrackList.innerHTML = '';
+  if(ids.length===0){
+    const empty = document.createElement('div');
+    empty.className = 'p-6 text-center text-sm text-slate-400';
+    empty.textContent = q ? 'Tidak ada hasil' : 'Belum ada lagu. Tambahkan file atau URL.';
+    elTrackList.appendChild(empty);
     return;
   }
-  // play its tone; for FM, slightly wobble the pitch by deviation to simulate modulation feel
-  if(st.type==='fm'){
-    // emulate small vibrato
-    playStation(st.id, st.toneHz);
-    // tiny freq sweeps
-    const obj = stationOscillators.get(st.id);
-    if(obj){
-      const base = st.toneHz;
-      const t = audioCtx.currentTime;
-      obj.osc.frequency.cancelScheduledValues(t);
-      obj.osc.frequency.setValueAtTime(base, t);
-      // periodic glide
-      obj.osc.frequency.linearRampToValueAtTime(base*1.02, t+0.6);
-      obj.osc.frequency.linearRampToValueAtTime(base*0.98, t+1.2);
-      obj.osc.frequency.linearRampToValueAtTime(base, t+1.8);
-    }
-  } else if(st.type==='am' || st.type==='cw'){
-    playStation(st.id, st.toneHz);
-  }
-}
-el.tuneBtn.addEventListener('click', tuneNow);
-el.stopBtn.addEventListener('click', stopAllAudio);
 
-// Initialize: add a few demo stations
-(function seed(){
-  const demo = [
-    {type:'fm', f: 100.1, p:-58, dev: 75},
-    {type:'fm', f: 101.7, p:-65, dev: 50},
-    {type:'am', f:  98.6, p:-70, dep: 40},
-    {type:'cw', f:  99.4, p:-62}
-  ];
-  demo.forEach(d=>{
-    state.signals.push({
-      id: state.nextId++,
-      type: d.type,
-      fMHz: d.f,
-      powerDb: d.p,
-      param: d.dev ?? d.dep ?? 0,
-      toneHz: toneForStation()
+  ids.forEach((id,idx)=>{
+    const t = byId(id);
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.dataset.id = id;
+
+    const cov = document.createElement('div');
+    cov.className = 'cover';
+    cov.innerHTML = t.cover ? `<img src="${t.cover}" class="w-full h-full object-cover rounded-lg">` : '♪';
+
+    const meta = document.createElement('div');
+    meta.className = 'min-w-0';
+    meta.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="ticker font-semibold">${t.title || 'Unknown Title'}</div>
+        ${t.album ? `<span class="chip">${t.album}</span>` : ''}
+      </div>
+      <div class="ticker text-xs text-slate-400">${t.artist || 'Unknown Artist'}</div>
+    `;
+
+    const acts = document.createElement('div');
+    acts.className = 'flex items-center gap-2';
+    const btnPlay = document.createElement('button');
+    btnPlay.className = 'btn btn-ghost'; btnPlay.textContent = '▶️';
+    btnPlay.title = 'Putar';
+
+    const more = document.createElement('details');
+    more.className = 'relative';
+    more.innerHTML = `
+      <summary class="btn btn-ghost">⋯</summary>
+      <div class="absolute right-0 mt-2 w-44 card p-2 text-sm z-10">
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700" data-act="add-to-playlist">Tambah ke playlist…</button>
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700" data-act="edit-meta">Edit info</button>
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-700 text-rose-300" data-act="remove">Hapus dari library</button>
+      </div>
+    `;
+
+    acts.append(btnPlay, more);
+    row.append(cov, meta, acts);
+    elTrackList.appendChild(row);
+
+    btnPlay.addEventListener('click', ()=> playTrackId(id));
+    more.addEventListener('click', (e)=>{
+      const a = /** @type {HTMLElement} */(e.target);
+      if(a.dataset.act==='add-to-playlist'){
+        pickPlaylistAndAdd(id);
+        more.open = false;
+      } else if(a.dataset.act==='edit-meta'){
+        editMeta(id);
+        more.open = false;
+      } else if(a.dataset.act==='remove'){
+        removeTrack(id);
+        more.open = false;
+      }
     });
   });
-  renderTable();
-})();
+
+  // update chips
+  elChipShuffle.textContent = `Shuffle: ${state.shuffle?'On':'Off'}`;
+  elChipRepeat.textContent = `Repeat: ${state.repeat==='off'?'Off':state.repeat==='all'?'All':'One'}`;
+
+  // refresh playlists list
+  renderPlaylists();
+}
+
+function editMeta(id){
+  const t = byId(id);
+  const title = prompt('Judul?', t.title || '') ?? t.title;
+  const artist = prompt('Artist?', t.artist || '') ?? t.artist;
+  const album = prompt('Album?', t.album || '') ?? t.album;
+  const cover = prompt('URL cover (opsional)?', t.cover || '') ?? t.cover;
+  t.title = title; t.artist = artist; t.album = album; t.cover = cover || undefined;
+  save(); renderLibrary(); if(state.idx>=0) updateNowPlaying();
+}
+
+function pickPlaylistAndAdd(trackId){
+  const names = Object.keys(state.playlists);
+  if(names.length===0){ alert('Belum ada playlist. Buat dulu di sidebar.'); return; }
+  const pick = prompt('Tambah ke playlist mana?\n' + names.join(', '));
+  if(!pick || !state.playlists[pick]) return;
+  if(!state.playlists[pick].includes(trackId)) state.playlists[pick].push(trackId);
+  save(); renderPlaylists();
+}
+
+function removeTrack(id){
+  // remove from library & all playlists
+  state.library = state.library.filter(t=>t.id!==id);
+  for(const k in state.playlists){
+    state.playlists[k] = state.playlists[k].filter(x=>x!==id);
+  }
+  // remove from queue
+  state.queue = state.queue.filter(x=>x!==id);
+  // adjust current idx
+  if(state.idx>=0){
+    const curId = state.queue[state.idx];
+    if(curId===id){ pause(); state.idx = -1; }
+  }
+  save(); renderLibrary();
+}
+
+function byId(id){ return state.library.find(t=>t.id===id); }
+
+/* ========== Player ========== */
+function loadTrack(track){
+  audio.src = track.src;
+  audio.playbackRate = 1;
+  // Now playing UI
+  elNPTitle.textContent = track.title || 'Unknown Title';
+  elNPArtist.textContent = track.artist || 'Unknown Artist';
+  if(track.cover){
+    elNPCover.innerHTML = `<img src="${track.cover}" class="w-full h-full object-cover rounded-lg">`;
+  } else {
+    elNPCover.textContent = '♪';
+  }
+  setMediaSession(track);
+}
+function playTrackId(id){
+  const i = state.queue.indexOf(id);
+  if(i>=0){ state.idx = i; const t = byId(id); loadTrack(t); play(); }
+}
+function play(){
+  audio.play().catch(()=>{/* ignore */});
+  elPlay.textContent = '⏸️';
+}
+function pause(){
+  audio.pause();
+  elPlay.textContent = '▶️';
+}
+function togglePlay(){ audio.paused ? play() : pause(); }
+
+function prev(){
+  if(state.idx<=0){ audio.currentTime = 0; return; }
+  state.idx--; const t = byId(state.queue[state.idx]); loadTrack(t); play();
+}
+function next(){
+  if(state.repeat==='one'){ audio.currentTime = 0; play(); return; }
+  if(state.shuffle){
+    // pick random different index
+    if(state.queue.length<=1){ audio.currentTime=0; play(); return; }
+    let r; do { r = (Math.random()*state.queue.length)|0 } while(r===state.idx);
+    state.idx = r;
+  } else {
+    state.idx++;
+    if(state.idx >= state.queue.length){
+      if(state.repeat==='all'){ state.idx = 0; }
+      else { pause(); state.idx = state.queue.length-1; return; }
+    }
+  }
+  const t = byId(state.queue[state.idx]); loadTrack(t); play();
+}
+
+/* Events */
+elPlay.addEventListener('click', togglePlay);
+elPrev.addEventListener('click', prev);
+elNext.addEventListener('click', next);
+
+audio.addEventListener('timeupdate', ()=>{
+  if(!isFinite(audio.duration)) return;
+  elSeek.value = String(Math.floor((audio.currentTime / audio.duration)*1000));
+  elCur.textContent = fmtTime(audio.currentTime);
+  elDur.textContent = fmtTime(audio.duration);
+});
+audio.addEventListener('ended', next);
+
+elSeek.addEventListener('input', ()=>{
+  if(!isFinite(audio.duration)) return;
+  const ratio = Number(elSeek.value)/1000;
+  audio.currentTime = ratio * audio.duration;
+});
+
+elVol.addEventListener('input', ()=> audio.volume = Number(elVol.value));
+elMute.addEventListener('click', ()=>{
+  audio.muted = !audio.muted;
+  elMute.textContent = audio.muted ? '🔇' : '🔈';
+});
+
+/* Shuffle & Repeat & Clear */
+function setShuffle(on){ state.shuffle = !!on; elChipShuffle.textContent = `Shuffle: ${on?'On':'Off'}`; save(); }
+function cycleRepeat(){
+  state.repeat = state.repeat==='off' ? 'all' : state.repeat==='all' ? 'one' : 'off';
+  elChipRepeat.textContent = `Repeat: ${state.repeat==='off'?'Off':state.repeat==='all'?'All':'One'}`;
+  save();
+}
+elShuffle.addEventListener('click', ()=> setShuffle(!state.shuffle));
+elRepeat.addEventListener('click', cycleRepeat);
+elClear.addEventListener('click', ()=>{
+  if(!confirm('Bersihkan semua lagu & playlist?')) return;
+  state.library = []; state.playlists = {}; state.queue=[]; state.idx=-1;
+  save(); renderLibrary(); pause(); audio.removeAttribute('src');
+});
+
+/* Keyboard shortcuts */
+window.addEventListener('keydown', (e)=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  if(e.code==='Space'){ e.preventDefault(); togglePlay(); }
+  else if(e.key==='ArrowLeft'){ audio.currentTime = Math.max(0, audio.currentTime-5); }
+  else if(e.key==='ArrowRight'){ audio.currentTime = Math.min(audio.duration||0, audio.currentTime+5); }
+  else if(e.key==='ArrowUp'){ audio.volume = Math.min(1, audio.volume+0.05); elVol.value = audio.volume; }
+  else if(e.key==='ArrowDown'){ audio.volume = Math.max(0, audio.volume-0.05); elVol.value = audio.volume; }
+  else if(e.key==='n' || e.key==='N'){ next(); }
+  else if(e.key==='p' || e.key==='P'){ prev(); }
+  else if(e.key==='s' || e.key==='S'){ setShuffle(!state.shuffle); }
+  else if(e.key==='r' || e.key==='R'){ cycleRepeat(); }
+});
+
+/* Search */
+elQ.addEventListener('input', renderLibrary);
+
+/* ========== Add tracks (File / URL) ========== */
+elFile.addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files || []);
+  await addFiles(files);
+  e.target.value = '';
+});
+
+async function addFiles(files){
+  for(const f of files){
+    if(!f.type.startsWith('audio/')) continue;
+    const id = uid();
+    const objectUrl = URL.createObjectURL(f);
+    const meta = inferMetaFromName(f.name);
+    /** @type {Track} */
+    const t = {
+      id, title: meta.title, artist: meta.artist, album: meta.album,
+      src: objectUrl, kind:'file'
+    };
+    state.library.push(t);
+  }
+  save(); renderLibrary();
+}
+
+function inferMetaFromName(name){
+  // coba format: Artist - Title.mp3 atau Title.mp3
+  name = name.replace(/\.[^/.]+$/, '');
+  const parts = name.split(' - ');
+  if(parts.length>=2){
+    return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim(), album:'' };
+  }
+  return { artist:'', title:name.trim(), album:'' };
+}
+
+elAddUrl.addEventListener('click', ()=>{
+  const url = prompt('Tempel URL lagu/stream (.mp3, .aac, .ogg, .m3u8/hls jika didukung browser):');
+  if(!url) return;
+  const title = prompt('Judul (opsional):') || new URL(url).pathname.split('/').pop();
+  const artist = prompt('Artist (opsional):') || '';
+  const cover = prompt('URL cover (opsional):') || '';
+  state.library.push({ id: uid(), title, artist, album:'', src: url, kind:'url', cover });
+  save(); renderLibrary();
+});
+
+/* Drag & Drop */
+;['dragenter','dragover'].forEach(ev=> elDropzone.addEventListener(ev, e=>{ e.preventDefault(); elDropzone.classList.add('border-emerald-400'); }));
+;['dragleave','drop'].forEach(ev=> elDropzone.addEventListener(ev, e=>{ e.preventDefault(); elDropzone.classList.remove('border-emerald-400'); }));
+elDropzone.addEventListener('drop', async e=>{
+  const items = e.dataTransfer.items;
+  const files = [];
+  for(const it of items){
+    if(it.kind==='file'){
+      const file = it.getAsFile();
+      if(file) files.push(file);
+    }
+  }
+  await addFiles(files);
+});
+
+/* ========== Playlists ========== */
+function renderPlaylists(){
+  elPlList.innerHTML = '';
+  const names = Object.keys(state.playlists);
+  if(names.length===0){
+    const li = document.createElement('li');
+    li.className = 'text-slate-400 text-sm';
+    li.textContent = 'Belum ada playlist.';
+    elPlList.appendChild(li);
+    return;
+  }
+  names.forEach(name=>{
+    const li = document.createElement('li');
+    li.className = 'flex items-center justify-between rounded-lg hover:bg-slate-700/40 px-2 py-1';
+    const btn = document.createElement('button');
+    btn.className = 'text-left flex-1 py-1';
+    btn.textContent = name;
+    const del = document.createElement('button');
+    del.className = 'chip hover:bg-rose-500/30'; del.textContent = 'hapus';
+    btn.addEventListener('click', ()=>{
+      state.view = {type:'playlist', name};
+      renderLibrary();
+    });
+    del.addEventListener('click', ()=>{
+      if(confirm(`Hapus playlist "${name}"?`)){
+        delete state.playlists[name];
+        if(state.view.type==='playlist' && state.view.name===name){ state.view={type:'all', name:'Semua Lagu'}; }
+        save(); renderLibrary();
+      }
+    });
+    li.append(btn, del);
+    elPlList.appendChild(li);
+  });
+}
+elPlCreate.addEventListener('click', ()=>{
+  const name = elPlName.value.trim();
+  if(!name) return;
+  if(state.playlists[name]){ alert('Nama playlist sudah ada'); return; }
+  state.playlists[name] = [];
+  elPlName.value = '';
+  save(); renderPlaylists();
+});
+
+/* ========== Export / Import ========== */
+elExport.addEventListener('click', ()=>{
+  const payload = {
+    library: state.library.filter(t=>t.kind==='url'), // file lokal tak diekspor
+    playlists: state.playlists
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'daniel-music.dmlib';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+elImport.addEventListener('change', async e=>{
+  const file = e.target.files?.[0];
+  if(!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    // merge
+    const urls = (data.library||[]);
+    for(const t of urls){
+      if(!state.library.find(x=>x.src===t.src)){
+        state.library.push({ id: uid(), title:t.title, artist:t.artist, album:t.album||'', src:t.src, kind:'url', cover:t.cover });
+      }
+    }
+    state.playlists = {...state.playlists, ...(data.playlists||{})};
+    save(); renderLibrary();
+  }catch(err){ alert('Gagal import: ' + err); }
+  e.target.value = '';
+});
+
+/* ========== Initial ========== */
+function initQueueIfEmpty(){
+  if(state.queue.length===0){
+    state.queue = state.library.map(t=>t.id);
+  }
+}
+renderLibrary();
+initQueueIfEmpty();
+
+/* Autoplay first track if exists */
+if(state.library.length>0){
+  state.idx = 0;
+  loadTrack(state.library[0]);
+}
+
+/* ========== Done ========== */
 </script>
 </body>
 </html>
