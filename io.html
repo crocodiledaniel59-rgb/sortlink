@@ -3,95 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FastLink - Shortener & Monetize</title>
+<title>Daniel Shortener - AdSafeLink</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 .tooltip {position: relative; display: inline-block;}
 .tooltip .tooltiptext {visibility: hidden; width: 120px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -60px; opacity: 0; transition: opacity 0.3s;}
 .tooltip:hover .tooltiptext {visibility: visible; opacity: 1;}
-.slide-up {animation: slideUp 0.5s ease-out;}
-@keyframes slideUp {from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; }}
 .fade-in {animation: fadeIn 0.5s ease-in;}
 @keyframes fadeIn {from { opacity: 0; } to { opacity: 1; }}
 </style>
+
+<!-- AdSafeLink Script -->
+<script type="text/javascript">
+    var go_url = 'https://link.adsafelink.com/';
+    var api = '6ecdb99c71d06f29b2f30d801206f72ae3beed35';
+    var shorten_includ = ['Daniel'];
+</script>
+<script src="//adsafelink.com/js/web-script.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
 
-<!-- Header -->
 <header class="bg-gray-800 shadow-lg sticky top-0 z-10">
 <div class="container mx-auto px-4 py-4 flex justify-between items-center">
     <div class="flex items-center space-x-3">
         <i class="fas fa-bolt text-yellow-400 text-2xl"></i>
-        <h1 class="text-xl md:text-2xl font-bold">Fast<span class="text-yellow-400">Link</span></h1>
+        <h1 class="text-xl md:text-2xl font-bold">Daniel<span class="text-yellow-400">Short</span></h1>
     </div>
     <nav>
         <ul class="flex space-x-6">
             <li><a href="#" class="hover:text-yellow-400 transition">Beranda</a></li>
             <li><a href="#historySection" class="hover:text-yellow-400 transition">Riwayat</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition">Statistik</a></li>
         </ul>
     </nav>
 </div>
 </header>
 
-<!-- Main -->
 <main class="container mx-auto px-4 py-8 flex-grow">
 
-<!-- Shorten Section -->
-<section id="shortenSection" class="max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-xl p-6 md:p-8 mb-8 slide-up">
+<section id="shortenSection" class="max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-xl p-6 md:p-8 mb-8 fade-in">
 <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center"><i class="fas fa-link mr-2"></i> Buat Link Keren Sekejap!</h2>
 <div class="space-y-6">
-    <div>
-        <div class="flex items-center mb-2">
-            <label for="originalUrl" class="block text-sm font-medium">Taro Link Panjangmu di Sini</label>
-            <span class="ml-2 text-xs text-gray-400">(URL harus pake http/https)</span>
-        </div>
-        <input type="url" id="originalUrl" required 
-            class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500"
-            placeholder="Contoh: https://website.com/halaman-super-panjang-sekali">
-    </div>
-    <div class="flex items-center justify-between">
-        <button id="generateBtn" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg flex items-center">
-            <i class="fas fa-magic mr-2"></i> Generate Sekarang
-        </button>
-        <div class="flex items-center space-x-2">
-            <input type="checkbox" id="customToggle" class="h-5 w-5 text-yellow-500 rounded">
-            <label for="customToggle" class="text-sm">Custom Link</label>
-        </div>
-    </div>
-    <div id="customUrlContainer" class="hidden">
-        <label for="customSlug" class="block text-sm font-medium mb-1">Custom Link Kamu</label>
-        <div class="flex">
-            <span class="inline-flex items-center px-4 rounded-l-lg bg-gray-700 border border-r-0 border-gray-600 text-gray-300">github.io/</span>
-            <input type="text" id="customSlug" 
-                class="flex-1 min-w-0 block w-full px-4 py-3 rounded-r-lg bg-gray-700 border border-l-0 border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-400"
-                placeholder="nama-kamu">
-        </div>
-        <p class="text-xs text-gray-400 mt-1">* Hanya huruf (a-z), angka (0-9), dan strip (-)</p>
-    </div>
-</div>
+    <input type="url" id="originalUrl" placeholder="Masukkan link asli..." class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500">
 
-<!-- Result Section -->
-<div id="resultSection" class="hidden mt-6 p-4 bg-gray-700 rounded-lg border border-yellow-400 border-dashed fade-in">
-<div class="flex items-center justify-between mb-2">
-    <p class="text-sm text-yellow-400 font-medium"><i class="fas fa-check-circle mr-1"></i> Mantap! Link siap dipake</p>
-    <div class="flex space-x-2">
-        <button id="copyBtn" class="bg-gray-600 hover:bg-gray-500 text-sm py-1 px-3 rounded"><i class="far fa-copy mr-1"></i> Salin</button>
-    </div>
-</div>
-<div class="flex">
-    <input type="text" id="shortUrl" readonly 
-        class="flex-1 px-4 py-2 rounded-l-lg bg-gray-800 border border-gray-600">
-    <button id="qrBtn" class="bg-gray-600 hover:bg-gray-500 px-3 rounded-r-lg border-l-0 border-gray-600 tooltip">
-        <i class="fas fa-qrcode"></i>
-        <span class="tooltiptext">Generate QR</span>
+    <button id="generateBtn" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg flex items-center">
+        <i class="fas fa-magic mr-2"></i> Generate Sekarang
     </button>
-</div>
+
+    <div id="resultSection" class="hidden mt-6 p-4 bg-gray-700 rounded-lg border border-yellow-400 border-dashed">
+        <div class="flex items-center justify-between mb-2">
+            <p class="text-sm text-yellow-400 font-medium"><i class="fas fa-check-circle mr-1"></i> Mantap! Link siap dipake</p>
+            <button id="copyBtn" class="bg-gray-600 hover:bg-gray-500 text-sm py-1 px-3 rounded"><i class="far fa-copy mr-1"></i> Salin</button>
+        </div>
+        <input type="text" id="shortUrl" readonly class="flex-1 px-4 py-2 rounded-l-lg bg-gray-800 border border-gray-600 w-full">
+    </div>
 </div>
 </section>
 
-<!-- History Section -->
 <section id="historySection" class="max-w-4xl mx-auto bg-gray-800 rounded-xl shadow-xl p-6 md:p-8 mb-8">
 <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center"><i class="fas fa-history mr-2"></i> Riwayat Link Kamu</h2>
 <div class="overflow-x-auto">
@@ -111,82 +79,56 @@
 
 </main>
 
-<!-- Footer -->
-<footer class="bg-gray-800 py-6 mt-12">
-<div class="container mx-auto px-4 text-center">
-<p class="text-sm">&copy; 2025 FastLink - Shortener & Monetize</p>
-<p class="text-xs text-gray-500 mt-2">Dibuat dengan <i class="fas fa-heart text-red-400"></i> untuk memudahkan berbagi link</p>
-</div>
+<footer class="bg-gray-800 py-6 mt-12 text-center text-sm text-gray-400">
+&copy; 2025 Daniel Shortener • Dibuat dengan <i class="fas fa-heart text-red-400"></i>
 </footer>
 
-<!-- JS -->
 <script>
-const shortenSection = document.getElementById('shortenSection');
-const resultSection = document.getElementById('resultSection');
-const originalUrlInput = document.getElementById('originalUrl');
-const customToggle = document.getElementById('customToggle');
-const customUrlContainer = document.getElementById('customUrlContainer');
+// tombol generate pake AdSafeLink
 const generateBtn = document.getElementById('generateBtn');
+const originalUrlInput = document.getElementById('originalUrl');
+const resultSection = document.getElementById('resultSection');
 const shortUrlOutput = document.getElementById('shortUrl');
 const copyBtn = document.getElementById('copyBtn');
-const qrBtn = document.getElementById('qrBtn');
 const historyTable = document.getElementById('historyTable');
 
-customToggle.addEventListener('change',()=>customUrlContainer.classList.toggle('hidden',!customToggle.checked));
-
 generateBtn.addEventListener('click',()=>{
-    const originalUrl = originalUrlInput.value.trim();
-    if(!originalUrl){alert('Link masih kosong bro!');return;}
-    if(!isValidUrl(originalUrl)){alert('Link nggak valid bro!');return;}
+    const url = originalUrlInput.value.trim();
+    if(!url){alert('Link masih kosong bro!');return;}
+    if(!/^(https?:\/\/)/.test(url)){alert('Link nggak valid bro!');return;}
 
-    let slug;
-    if(customToggle.checked){
-        slug = document.getElementById('customSlug').value.trim();
-        if(!slug){alert('Custom link masih kosong!');return;}
-        if(!/^[a-zA-Z0-9-]+$/.test(slug)){alert('Custom link cuma boleh huruf, angka, strip (-)');return;}
-        if(localStorage.getItem('link-'+slug)){alert('Slug ini udah kepake bro!');return;}
-    }else{
-        do{slug=Math.random().toString(36).substring(2,8);}while(localStorage.getItem('link-'+slug));
-    }
+    // panggil AdSafeLink API
+    window.adsafeWeb && adsafeWeb.generateShort(url, function(short){
+        shortUrlOutput.value = short;
+        resultSection.classList.remove('hidden');
 
-    const shortUrl = `https://crocodiledaniel59-rgb.github.io/sortlink/?r=${slug}`;
-    const linkData={originalUrl,shortUrl,createdAt:new Date().toISOString()};
-    localStorage.setItem('link-'+slug,JSON.stringify(linkData));
-
-    shortUrlOutput.value=shortUrl;
-    resultSection.classList.remove('hidden');
-    addLinkToHistory(linkData);
+        // simpan riwayat
+        const data = {originalUrl: url, shortUrl: short};
+        addLinkToHistory(data);
+    });
 });
 
-// Copy main
 copyBtn.addEventListener('click',()=>{
     shortUrlOutput.select();
     document.execCommand('copy');
     alert('Link disalin bro!');
 });
 
-// QR simulasi
-qrBtn.addEventListener('click',()=>alert('QR Code cuma fitur premium bro!'));
-
-function isValidUrl(url){try{new URL(url);return true;}catch{return false;}}
-
-function addLinkToHistory(linkData){
+function addLinkToHistory(data){
     const row=document.createElement('tr');
     const idx=historyTable.children.length+1;
     row.innerHTML=`
     <td class="px-4 py-2 text-sm text-gray-300">${idx}</td>
-    <td class="px-4 py-2 text-sm text-yellow-400"><a href="${linkData.shortUrl}" target="_blank">${linkData.shortUrl}</a></td>
-    <td class="px-4 py-2 text-sm text-gray-300 break-all">${linkData.originalUrl}</td>
+    <td class="px-4 py-2 text-sm text-yellow-400"><a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a></td>
+    <td class="px-4 py-2 text-sm text-gray-300 break-all">${data.originalUrl}</td>
     <td class="px-4 py-2 text-sm text-gray-300"><button class="bg-gray-600 hover:bg-gray-500 py-1 px-2 rounded copy-btn">Copy</button></td>`;
     historyTable.prepend(row);
     row.querySelector('.copy-btn').addEventListener('click',()=>{
-        navigator.clipboard.writeText(linkData.shortUrl);
+        navigator.clipboard.writeText(data.shortUrl);
         alert('Link disalin bro!');
     });
 }
-
-// Load existing history
-Object.keys(localStorage).filter(k=>k.startsWith('link-')).map(k=>JSON.parse(localStorage.getItem(k))).forEach(addLinkToHistory);
 </script>
+
 </body>
 </html>
