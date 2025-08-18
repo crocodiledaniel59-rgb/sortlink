@@ -1,134 +1,201 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daniel Shortener - AdSafeLink</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-.tooltip {position: relative; display: inline-block;}
-.tooltip .tooltiptext {visibility: hidden; width: 120px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -60px; opacity: 0; transition: opacity 0.3s;}
-.tooltip:hover .tooltiptext {visibility: visible; opacity: 1;}
-.fade-in {animation: fadeIn 0.5s ease-in;}
-@keyframes fadeIn {from { opacity: 0; } to { opacity: 1; }}
-</style>
-
-<!-- AdSafeLink Script -->
-<script type="text/javascript">
-    var go_url = 'https://link.adsafelink.com/';
-    var api = '6ecdb99c71d06f29b2f30d801206f72ae3beed35';
-    var shorten_includ = ['Daniel'];
-</script>
-<script src="//adsafelink.com/js/web-script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Aplikasi - Download Aplikasi Pihak Ketiga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        .app-card {
+            perspective: 1000px;
+            transition: transform 0.3s;
+        }
+        .app-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .app-card:hover .app-card-inner {
+            transform: rotateY(20deg) rotateX(-10deg);
+        }
+        .download-btn {
+            transition: all 0.3s;
+            background-color: #10B981;
+        }
+        .download-btn:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .app-image-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-
-<header class="bg-gray-800 shadow-lg sticky top-0 z-10">
-<div class="container mx-auto px-4 py-4 flex justify-between items-center">
-    <div class="flex items-center space-x-3">
-        <i class="fas fa-bolt text-yellow-400 text-2xl"></i>
-        <h1 class="text-xl md:text-2xl font-bold">Daniel<span class="text-yellow-400">Short</span></h1>
-    </div>
-    <nav>
-        <ul class="flex space-x-6">
-            <li><a href="#" class="hover:text-yellow-400 transition">Beranda</a></li>
-            <li><a href="#historySection" class="hover:text-yellow-400 transition">Riwayat</a></li>
-        </ul>
-    </nav>
-</div>
-</header>
-
-<main class="container mx-auto px-4 py-8 flex-grow">
-
-<section id="shortenSection" class="max-w-3xl mx-auto bg-gray-800 rounded-xl shadow-xl p-6 md:p-8 mb-8 fade-in">
-<h2 class="text-2xl md:text-3xl font-bold mb-6 text-center"><i class="fas fa-link mr-2"></i> Buat Link Keren Sekejap!</h2>
-<div class="space-y-6">
-    <input type="url" id="originalUrl" placeholder="Masukkan link asli..." class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500">
-
-    <button id="generateBtn" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg flex items-center">
-        <i class="fas fa-magic mr-2"></i> Generate Sekarang
-    </button>
-
-    <div id="resultSection" class="hidden mt-6 p-4 bg-gray-700 rounded-lg border border-yellow-400 border-dashed">
-        <div class="flex items-center justify-between mb-2">
-            <p class="text-sm text-yellow-400 font-medium"><i class="fas fa-check-circle mr-1"></i> Mantap! Link siap dipake</p>
-            <button id="copyBtn" class="bg-gray-600 hover:bg-gray-500 text-sm py-1 px-3 rounded"><i class="far fa-copy mr-1"></i> Salin</button>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-800">Toko Aplikasi</h1>
+                <div class="relative">
+                    <input type="text" placeholder="Cari aplikasi..." class="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <button class="absolute right-3 top-2 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
-        <input type="text" id="shortUrl" readonly class="flex-1 px-4 py-2 rounded-l-lg bg-gray-800 border border-gray-600 w-full">
-    </div>
-</div>
-</section>
+    </header>
 
-<section id="historySection" class="max-w-4xl mx-auto bg-gray-800 rounded-xl shadow-xl p-6 md:p-8 mb-8">
-<h2 class="text-2xl md:text-3xl font-bold mb-6 text-center"><i class="fas fa-history mr-2"></i> Riwayat Link Kamu</h2>
-<div class="overflow-x-auto">
-<table class="min-w-full bg-gray-700 rounded-lg overflow-hidden">
-<thead class="bg-gray-600">
-<tr>
-<th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">No</th>
-<th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Link Pendek</th>
-<th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Link Asli</th>
-<th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Copy</th>
-</tr>
-</thead>
-<tbody id="historyTable" class="divide-y divide-gray-600"></tbody>
-</table>
-</div>
-</section>
+    <main class="container mx-auto px-4 py-8">
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Aplikasi Terbaru</h2>
+            <div class="app-grid">
+                <!-- App 1 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f7f71ad9-0d59-410c-8ac2-898fee3a65f1.png" alt="Aplikasi WhatsApp Business dengan ikon berwarna hijau, tampilan antarmuka profesional untuk bisnis kecil" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">WhatsApp Business</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Solusi komunikasi bisnis profesional</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
 
-</main>
+                <!-- App 2 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ab5aa4b8-8402-45f6-a2d2-78406d919afa.png" alt="Aplikasi desain grafis Canva dengan berbagai template kreatif dan alat editing" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Canva</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Alat desain grafis untuk semua orang</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
 
-<footer class="bg-gray-800 py-6 mt-12 text-center text-sm text-gray-400">
-&copy; 2025 Daniel Shortener • Dibuat dengan <i class="fas fa-heart text-red-400"></i>
-</footer>
+                <!-- App 3 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/90561f54-a48b-4fe0-892a-43a4a4bbf439.png" alt="Aplikasi media sosial TikTok dengan logo berbentuk not musik, platform untuk video pendek kreatif" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">TikTok</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Platform video pendek terpopuler</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
 
-<script>
-// tombol generate pake AdSafeLink
-const generateBtn = document.getElementById('generateBtn');
-const originalUrlInput = document.getElementById('originalUrl');
-const resultSection = document.getElementById('resultSection');
-const shortUrlOutput = document.getElementById('shortUrl');
-const copyBtn = document.getElementById('copyBtn');
-const historyTable = document.getElementById('historyTable');
+                <!-- App 4 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ad441288-acb8-420b-bfb5-29e9eb50d56b.png" alt="Aplikasi streaming musik Spotify dengan ikon berwarna hijau neon, menampilkan daftar putar musik populer" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Spotify</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Dengarkan jutaan lagu dan podcast</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
 
-generateBtn.addEventListener('click',()=>{
-    const url = originalUrlInput.value.trim();
-    if(!url){alert('Link masih kosong bro!');return;}
-    if(!/^(https?:\/\/)/.test(url)){alert('Link nggak valid bro!');return;}
+                <!-- App 5 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5ec2cbed-ebe2-4ce6-a86e-1537af5b4543.png" alt="Aplikasi konferensi video Zoom dengan ikon berwarna biru, tampilan rapat virtual dengan banyak peserta" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Zoom</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Solusi rapat dan webinar online</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
 
-    // panggil AdSafeLink API
-    window.adsafeWeb && adsafeWeb.generateShort(url, function(short){
-        shortUrlOutput.value = short;
-        resultSection.classList.remove('hidden');
+                <!-- App 6 -->
+                <div class="app-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="app-card-inner">
+                        <div class="app-image-container">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/382dc520-1837-4bcb-adc3-801a83053250.png" alt="Aplikasi Instagram dengan ikon berwarna ungu merah muda, tampilan feed foto dan cerita kreatif" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Instagram</h3>
+                            <p class="text-gray-600 mt-2 mb-4">Berbagi momen dengan foto dan video</p>
+                            <a href="#" class="download-btn inline-block w-full py-2 text-center text-white font-medium rounded-md">Unduh</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        // simpan riwayat
-        const data = {originalUrl: url, shortUrl: short};
-        addLinkToHistory(data);
-    });
-});
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">Toko Aplikasi</h3>
+                    <p class="text-gray-400">Tempat terbaik untuk menemukan aplikasi pihak ketiga berkualitas.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Kontak Kami</h3>
+                    <p class="text-gray-400">support@tokoapp.com</p>
+                    <p class="text-gray-400">+62 123 4567 890</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>© 2023 Toko Aplikasi. Semua hak dilindungi.</p>
+            </div>
+        </div>
+    </footer>
 
-copyBtn.addEventListener('click',()=>{
-    shortUrlOutput.select();
-    document.execCommand('copy');
-    alert('Link disalin bro!');
-});
+    <script>
+        // 3D rotation effect for app cards
+        document.querySelectorAll('.app-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                const inner = card.querySelector('.app-card-inner');
+                inner.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', (e) => {
+                const inner = card.querySelector('.app-card-inner');
+                inner.style.transform = 'rotateY(0deg) rotateX(0deg)';
+            });
+        });
 
-function addLinkToHistory(data){
-    const row=document.createElement('tr');
-    const idx=historyTable.children.length+1;
-    row.innerHTML=`
-    <td class="px-4 py-2 text-sm text-gray-300">${idx}</td>
-    <td class="px-4 py-2 text-sm text-yellow-400"><a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a></td>
-    <td class="px-4 py-2 text-sm text-gray-300 break-all">${data.originalUrl}</td>
-    <td class="px-4 py-2 text-sm text-gray-300"><button class="bg-gray-600 hover:bg-gray-500 py-1 px-2 rounded copy-btn">Copy</button></td>`;
-    historyTable.prepend(row);
-    row.querySelector('.copy-btn').addEventListener('click',()=>{
-        navigator.clipboard.writeText(data.shortUrl);
-        alert('Link disalin bro!');
-    });
-}
-</script>
-
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+
