@@ -149,7 +149,7 @@ generateBtn.addEventListener('click',()=>{
         do{slug=Math.random().toString(36).substring(2,8);}while(localStorage.getItem('link-'+slug));
     }
 
-    const shortUrl = `https://<USERNAME>.github.io/<REPO>/?r=${slug}`;
+    const shortUrl = `https://crocodiledaniel59-rgb.github.io/sortlink/?r=${slug}`;
     const linkData={originalUrl,shortUrl,createdAt:new Date().toISOString()};
     localStorage.setItem('link-'+slug,JSON.stringify(linkData));
 
