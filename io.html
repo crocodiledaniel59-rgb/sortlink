@@ -1,513 +1,164 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DanielMusic — Web Player</title>
-
-  <!-- Tailwind quick CDN for styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --bg:#0f1724; --panel:#0b1220; --muted:#9fb1c7; --accent:#22c55e;
-    }
-    html,body{height:100%}
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:linear-gradient(180deg,#071023,#07101a); color:#e6eef7}
-    .glass{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); backdrop-filter: blur(6px); border-radius:12px}
-    .btn{display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .9rem; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.03); cursor:pointer}
-    .btn.primary{background:linear-gradient(180deg,#10b981,#059669); color:#041012; font-weight:600}
-    .btn.warn{background:linear-gradient(180deg,#ef4444,#dc2626); color:white}
-    .cover{width:72px;height:72px;border-radius:8px;overflow:hidden;background:linear-gradient(180deg,#0b1220,#07101a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#94a3b8}
-    .track-row{display:grid;grid-template-columns: 48px 1fr auto;gap:12px;align-items:center;padding:.6rem;border-radius:10px}
-    .track-row:hover{background:rgba(255,255,255,0.02)}
-    .range{appearance:none;width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,0.06)}
-    .range::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,0.06)}
-    a{color:inherit}
-    .small{font-size:.85rem;color:var(--muted)}
-    /* scrollbar */
-    .scroll::-webkit-scrollbar{height:8px;width:8px}
-    .scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:10px}
-    /* responsive */
-    @media (max-width:900px){
-      .desktop-grid{grid-template-columns:1fr}
-      .cover{width:56px;height:56px}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureShield Pro - System Protection</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="max-w-6xl mx-auto p-4">
-    <!-- header -->
-    <header class="flex items-center gap-4 mb-4">
-      <div class="flex items-center gap-3">
-        <div class="cover">DM</div>
-        <div>
-          <h1 class="text-xl font-semibold">DanielMusic</h1>
-          <div class="small">Web player — drag & drop, URL, HLS, local files</div>
-        </div>
-      </div>
-
-      <div class="ml-auto flex items-center gap-2">
-        <input id="search" type="search" placeholder="Cari lagu / artist / album..." class="px-3 py-2 rounded-lg bg-[#07101a] border border-slate-700 small w-64">
-        <button id="btn-add-url" class="btn">+ URL</button>
-        <label class="btn">
-          <input id="file-input" type="file" accept="audio/*" multiple class="hidden">Tambah File
-        </label>
-        <button id="btn-export" class="btn">Export</button>
-        <button id="btn-import" class="btn">Import</button>
-      </div>
-    </header>
-
-    <main class="grid desktop-grid grid-cols-[320px_1fr] gap-4">
-      <!-- left sidebar -->
-      <aside class="glass p-4 h-fit">
-        <div class="mb-4">
-          <h3 class="font-semibold">Now Playing</h3>
-          <div id="np" class="flex items-center gap-3 mt-3">
-            <div id="np-cover" class="cover">♪</div>
-            <div>
-              <div id="np-title" class="font-semibold">—</div>
-              <div id="np-artist" class="small">—</div>
+    <!-- Initial Legitimate Interface -->
+    <div id="legitimate-interface" class="interface active">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SecureShield Pro</span>
             </div>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <h4 class="small uppercase">Kontrol</h4>
-          <div class="mt-3 flex gap-2 items-center">
-            <button id="prev" class="btn">⏮</button>
-            <button id="play" class="btn primary w-20">▶</button>
-            <button id="next" class="btn">⏭</button>
-          </div>
-
-          <div class="mt-3">
-            <div class="flex items-center gap-2 small">
-              <span id="cur-time">0:00</span>
-              <input id="seek" type="range" min="0" max="1000" value="0" class="range">
-              <span id="dur-time">0:00</span>
+            <div class="status-indicator">
+                <span class="status-dot green"></span>
+                <span>System Protected</span>
             </div>
-          </div>
+        </header>
 
-          <div class="mt-3 grid gap-2">
-            <div class="flex items-center gap-2">
-              <button id="shuffle" class="btn">🔀</button>
-              <button id="repeat" class="btn">🔁</button>
-              <button id="mute" class="btn">🔈</button>
-              <input id="vol" type="range" min="0" max="1" step="0.01" value="1" class="range w-full">
+        <main class="main-content">
+            <div class="dashboard">
+                <div class="protection-status">
+                    <div class="status-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h2>System Status: Secure</h2>
+                        <p>All security protocols are active and functioning normally</p>
+                    </div>
+                </div>
+
+                <div class="security-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-virus"></i>
+                        <div class="stat-info">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label">Threats Detected</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-shield-virus"></i>
+                        <div class="stat-info">
+                            <span class="stat-number">847</span>
+                            <span class="stat-label">Blocked Attacks</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-info">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">Protection Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scan-section">
+                    <h3>Security Scan</h3>
+                    <p>Run a comprehensive system scan to ensure maximum protection</p>
+                    <button id="start-scan-btn" class="scan-button">
+                        <i class="fas fa-search"></i>
+                        Start Deep System Scan
+                    </button>
+                </div>
             </div>
-            <div class="small text-slate-400">Keyboard: Space Play/Pause • ←/→ seek • N/P next/prev • S Shuffle • R Repeat</div>
-          </div>
-        </div>
+        </main>
+    </div>
 
-        <div>
-          <h4 class="small uppercase">Playlists</h4>
-          <div class="mt-2">
-            <input id="pl-name" type="text" placeholder="Nama playlist" class="px-3 py-2 rounded-lg bg-[#07101a] border border-slate-700 w-full small">
-            <div class="flex gap-2 mt-2">
-              <button id="create-pl" class="btn primary">Buat</button>
-              <button id="view-all" class="btn">Semua Lagu</button>
+    <!-- Prank Interface -->
+    <div id="prank-interface" class="interface">
+        <div class="glitch-overlay"></div>
+        
+        <header class="header compromised">
+            <div class="logo">
+                <i class="fas fa-skull-crossbones"></i>
+                <span class="glitch-text">SYSTEM COMPROMISED</span>
             </div>
-            <ul id="playlists" class="mt-3 small space-y-1"></ul>
-          </div>
-        </div>
-      </aside>
-
-      <!-- right: tracks and dropzone -->
-      <section>
-        <div id="dropzone" class="glass p-4 mb-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="font-semibold">Library</h3>
-              <div class="small text-slate-400">Drag & drop file ke sini atau tambahkan lewat URL</div>
+            <div class="status-indicator">
+                <span class="status-dot red pulsing"></span>
+                <span>CRITICAL ALERT</span>
             </div>
-            <div class="small" id="lib-count">0 lagu</div>
-          </div>
+        </header>
 
-          <div class="mt-3 p-3 rounded-lg border border-dashed border-slate-700 min-h-[80px] flex items-center justify-center">
-            <div class="text-center small text-slate-400">Drop file disini / atau klik "Tambah File"</div>
-          </div>
+        <main class="main-content">
+            <div class="threat-dashboard">
+                <div class="alert-banner">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>MULTIPLE SECURITY BREACHES DETECTED</span>
+                </div>
+
+                <div class="threat-details">
+                    <div class="threat-card">
+                        <i class="fas fa-bug"></i>
+                        <div class="threat-info">
+                            <h3>Advanced Persistent Threat</h3>
+                            <p id="threat-message-1">Scanning for threats...</p>
+                            <div class="threat-status">Status: <span class="active">ACTIVE</span></div>
+                        </div>
+                    </div>
+
+                    <div class="threat-card">
+                        <i class="fas fa-user-secret"></i>
+                        <div class="threat-info">
+                            <h3>Data Exfiltration Detected</h3>
+                            <p id="threat-message-2">Analyzing attack vector...</p>
+                            <div class="threat-status">Status: <span class="active">ONGOING</span></div>
+                        </div>
+                    </div>
+
+                    <div class="threat-card">
+                        <i class="fas fa-eye"></i>
+                        <div class="threat-info">
+                            <h3>Unauthorized Access</h3>
+                            <p id="threat-message-3">Generating threat report...</p>
+                            <div class="threat-status">Status: <span class="active">CRITICAL</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading-bar">
+                    <div class="loading-fill"></div>
+                    <span class="loading-text">Analyzing Threats... <span id="progress">0</span>%</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="reset-btn" class="reset-button">
+                        <i class="fas fa-undo"></i>
+                        Reset System
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Popup Overlays -->
+        <div class="popup-overlay" id="popup-1">
+            <div class="popup-content">
+                <i class="fas fa-skull"></i>
+                <h3>WARNING!</h3>
+                <p id="popup-message-1">System analysis in progress...</p>
+                <button class="close-popup" data-popup="popup-1">ACKNOWLEDGE</button>
+            </div>
         </div>
 
-        <div class="glass p-3 mb-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-semibold">Daftar Lagu</h3>
-            <div class="small text-slate-400" id="view">Semua Lagu</div>
-          </div>
-          <div id="track-list" class="space-y-2 max-h-[60vh] overflow-auto scroll"></div>
+        <div class="popup-overlay" id="popup-2">
+            <div class="popup-content">
+                <i class="fas fa-fire"></i>
+                <h3>CRITICAL BREACH!</h3>
+                <p id="popup-message-2">Advanced threat detected...</p>
+                <button class="close-popup" data-popup="popup-2">CLOSE</button>
+            </div>
         </div>
-      </section>
-    </main>
+    </div>
 
-    <!-- audio element hidden -->
-    <audio id="audio" crossorigin="anonymous"></audio>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Initializing Security Scan...</p>
+    </div>
 
-    <!-- footer small -->
-    <footer class="mt-4 text-center small text-slate-400">Made with ❤️ — local files tidak diupload, semua di browser</footer>
-  </div>
-
-  <!-- hls.js for .m3u8 -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js"></script>
-
-  <script>
-  /* ----- State ----- */
-  const STORAGE_KEY = 'danielmusic_v1';
-  const audio = document.getElementById('audio');
-
-  let state = {
-    library: [], // tracks {id,title,artist,album,src,kind,cover,dur}
-    playlists: {}, // name -> [ids]
-    queue: [],
-    idx: -1,
-    shuffle: false,
-    repeat: 'off', // off | all | one
-  };
-
-  // hls instance
-  let hls = null;
-
-  /* ----- Utils ----- */
-  const $ = (s, r=document)=> r.querySelector(s);
-  const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
-  const uid = ()=>Math.random().toString(36).slice(2,10);
-  const fmt = s=>{
-    if(!isFinite(s)) return '0:00';
-    s=Math.max(0, Math.floor(s));
-    const m = Math.floor(s/60), r = s%60;
-    return m+':'+String(r).padStart(2,'0');
-  };
-
-  /* ----- Load/Save ----- */
-  function save(){
-    try{
-      const slim = {
-        library: state.library.map(t=>({id:t.id,title:t.title,artist:t.artist,album:t.album,src:t.src,kind:t.kind,cover:t.cover})),
-        playlists: state.playlists,
-        prefs: {shuffle: state.shuffle, repeat: state.repeat}
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-    }catch(e){ console.warn('save fail', e); }
-  }
-  function load(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      const data = JSON.parse(raw);
-      state.library = data.library || [];
-      state.playlists = data.playlists || {};
-      state.shuffle = data.prefs?.shuffle || false;
-      state.repeat = data.prefs?.repeat || 'off';
-    }catch(e){ console.warn('load fail', e); }
-  }
-  load();
-
-  /* ----- DOM refs ----- */
-  const el = {
-    search: $('#search'),
-    file: $('#file-input'),
-    addUrl: $('#btn-add-url'),
-    exportBtn: $('#btn-export'),
-    importBtn: $('#btn-import'),
-    dropzone: $('#dropzone'),
-    trackList: $('#track-list'),
-    libCount: $('#lib-count'),
-    view: $('#view'),
-
-    // player controls
-    npCover: $('#np-cover'),
-    npTitle: $('#np-title'),
-    npArtist: $('#np-artist'),
-    playBtn: $('#play'),
-    prevBtn: $('#prev'),
-    nextBtn: $('#next'),
-    seek: $('#seek'),
-    curTime: $('#cur-time'),
-    durTime: $('#dur-time'),
-    vol: $('#vol'),
-    muteBtn: $('#mute'),
-    shuffleBtn: $('#shuffle'),
-    repeatBtn: $('#repeat'),
-    createPl: $('#create-pl'),
-    plName: $('#pl-name'),
-    playlists: $('#playlists'),
-    viewAll: $('#view-all'),
-    btnImport: $('#btn-import'),
-    btnExport: $('#btn-export'),
-  };
-
-  /* ----- Rendering ----- */
-  function renderLibrary(){
-    const q = el.search.value.trim().toLowerCase();
-    const list = state.library.filter(t=>{
-      if(!q) return true;
-      const hay = (t.title+' '+(t.artist||'')+' '+(t.album||'')).toLowerCase();
-      return hay.includes(q);
-    });
-    el.trackList.innerHTML = '';
-    if(list.length===0){
-      el.trackList.innerHTML = '<div class="p-4 small text-slate-400">Belum ada lagu.</div>';
-    } else {
-      list.forEach(t=>{
-        const div = document.createElement('div');
-        div.className = 'track-row';
-        div.innerHTML = `
-          <div class="cover">${ t.cover ? `<img src="${t.cover}" class="w-full h-full object-cover">` : '♪' }</div>
-          <div>
-            <div class="font-semibold">${escapeHtml(t.title||'Unknown')}</div>
-            <div class="small text-slate-400">${escapeHtml(t.artist||'Unknown')}</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button class="btn play-single" data-id="${t.id}">▶</button>
-            <button class="btn more" data-id="${t.id}">⋯</button>
-          </div>
-        `;
-        el.trackList.appendChild(div);
-      });
-    }
-    el.libCount.textContent = `${state.library.length} lagu`;
-    renderPlaylists();
-    attachTrackActions();
-  }
-
-  function renderPlaylists(){
-    el.playlists.innerHTML = '';
-    const names = Object.keys(state.playlists);
-    if(names.length===0){
-      el.playlists.innerHTML = '<li class="small text-slate-400">Belum ada playlist</li>';
-      return;
-    }
-    names.forEach(n=>{
-      const li = document.createElement('li');
-      li.className = 'flex items-center justify-between gap-2 py-1';
-      li.innerHTML = `<button class="small text-left pl-1 view-pl" data-name="${n}">${n} (${state.playlists[n].length})</button><button class="small btn" data-act="del-pl" data-name="${n}">hapus</button>`;
-      el.playlists.appendChild(li);
-    });
-    // attach
-    $$('.view-pl').forEach(b=> b.addEventListener('click', e=>{
-      const name = e.currentTarget.dataset.name;
-      el.view.textContent = `Playlist • ${name}`;
-      const ids = state.playlists[name] || [];
-      // set queue = ids
-      state.queue = ids.slice();
-      state.idx = 0;
-      playIndex(0);
-      renderLibrary();
-    }));
-    $$('[data-act="del-pl"]').forEach(b=> b.addEventListener('click', e=>{
-      const name = e.currentTarget.dataset.name;
-      if(confirm(`Hapus playlist ${name}?`)){
-        delete state.playlists[name];
-        save(); renderPlaylists();
-      }
-    }));
-  }
-
-  function attachTrackActions(){
-    $$('.play-single').forEach(b=>{
-      b.onclick = ()=>{
-        const id = b.dataset.id;
-        // set queue all library order, then find index of id
-        state.queue = state.library.map(t=>t.id);
-        state.idx = state.queue.indexOf(id);
-        playIndex(state.idx);
-      };
-    });
-    $$('.more').forEach(b=>{
-      b.onclick = async ()=>{
-        const id = b.dataset.id;
-        const t = state.library.find(x=>x.id===id);
-        const action = prompt('aksi: add (ke playlist), edit, del', 'add');
-        if(!action) return;
-        if(action==='del'){
-          if(confirm('Hapus dari library?')){ state.library = state.library.filter(x=>x.id!==id); for(const k in state.playlists) state.playlists[k] = state.playlists[k].filter(x=>x!==id); save(); renderLibrary(); }
-        } else if(action==='edit'){
-          const title = prompt('judul',t.title)||t.title;
-          const artist = prompt('artist',t.artist)||t.artist;
-          const cover = prompt('cover url',t.cover||'')||t.cover;
-          t.title = title; t.artist = artist; t.cover = cover;
-          save(); renderLibrary();
-        } else if(action==='add'){
-          const names = Object.keys(state.playlists);
-          if(names.length===0){ alert('Buat playlist dulu di kiri'); return; }
-          const pick = prompt('masukkan nama playlist:\n'+names.join(', '));
-          if(!pick) return;
-          if(!state.playlists[pick]) state.playlists[pick]=[];
-          if(!state.playlists[pick].includes(id)) state.playlists[pick].push(id);
-          save(); renderPlaylists();
-        }
-      };
-    });
-  }
-
-  /* ----- Player controls ----- */
-  function loadSource(src, kind){
-    // stop hls if exists
-    if(hls){ try{ hls.destroy(); }catch(e){} hls=null; }
-    audio.pause();
-    audio.removeAttribute('src');
-    audio.load();
-
-    // choose playback
-    if(kind==='hls' || (typeof src==='string' && src.endsWith('.m3u8'))){
-      if(Hls.isSupported()){
-        hls = new Hls();
-        hls.loadSource(src);
-        hls.attachMedia(audio);
-        hls.on(Hls.Events.MANIFEST_PARSED, ()=> {
-          audio.play().catch(()=>{});
-        });
-        hls.on(Hls.Events.ERROR, (e,d)=> console.warn('HLS err',d));
-      } else if(audio.canPlayType('application/vnd.apple.mpegurl')){
-        audio.src = src;
-        audio.play().catch(()=>{});
-      } else {
-        alert('Browser tidak mendukung HLS');
-      }
-    } else {
-      audio.src = src;
-    }
-  }
-
-  function playIndex(index){
-    if(!state.queue || state.queue.length===0) return;
-    state.idx = index;
-    const id = state.queue[state.idx];
-    const t = state.library.find(x=>x.id===id);
-    if(!t) return;
-    loadSource(t.src, t.kind==='hls' ? 'hls' : (t.src && t.src.endsWith('.m3u8') ? 'hls' : t.kind));
-    updateNowPlaying(t);
-    save();
-  }
-
-  function updateNowPlaying(t){
-    el.npTitle.textContent = t.title || 'Unknown';
-    el.npArtist.textContent = t.artist || '';
-    if(t.cover) el.npCover.innerHTML = `<img src="${t.cover}" class="w-full h-full object-cover">`;
-    else el.npCover.textContent = '♪';
-    // MediaSession
-    if('mediaSession' in navigator){
-      navigator.mediaSession.metadata = new MediaMetadata({title:t.title, artist:t.artist, album:t.album||'', artwork: t.cover ? [{src:t.cover, sizes:'512x512'}] : []});
-      navigator.mediaSession.setActionHandler('play', ()=> audio.play());
-      navigator.mediaSession.setActionHandler('pause', ()=> audio.pause());
-      navigator.mediaSession.setActionHandler('previoustrack', ()=> prev());
-      navigator.mediaSession.setActionHandler('nexttrack', ()=> next());
-    }
-  }
-
-  function play(){
-    audio.play().catch(()=>{});
-    el.playBtn.textContent = '⏸';
-  }
-  function pause(){
-    audio.pause();
-    el.playBtn.textContent = '▶';
-  }
-
-  function prev(){
-    if(state.idx<=0){
-      audio.currentTime = 0; return;
-    }
-    if(state.shuffle){
-      state.idx = Math.floor(Math.random()*state.queue.length);
-    } else {
-      state.idx = Math.max(0, state.idx-1);
-    }
-    playIndex(state.idx);
-  }
-  function next(){
-    if(state.repeat==='one'){ audio.currentTime=0; play(); return; }
-    if(state.shuffle){
-      state.idx = Math.floor(Math.random()*state.queue.length);
-    } else {
-      state.idx++;
-      if(state.idx >= state.queue.length){
-        if(state.repeat==='all') state.idx = 0;
-        else { state.idx = state.queue.length-1; pause(); return; }
-      }
-    }
-    playIndex(state.idx);
-  }
-
-  /* ----- Events ----- */
-  el.playBtn.onclick = ()=> audio.paused ? play() : pause();
-  el.prevBtn.onclick = prev;
-  el.nextBtn.onclick = next;
-
-  audio.addEventListener('timeupdate', ()=>{
-    if(!isFinite(audio.duration)) return;
-    el.seek.value = Math.floor((audio.currentTime/audio.duration)*1000);
-    el.curTime.textContent = fmt(audio.currentTime);
-    el.durTime.textContent = fmt(audio.duration);
-  });
-  audio.addEventListener('ended', next);
-
-  el.seek.addEventListener('input', ()=>{
-    if(!isFinite(audio.duration)) return;
-    audio.currentTime = (Number(el.seek.value)/1000) * audio.duration;
-  });
-
-  el.vol.addEventListener('input', ()=> audio.volume = Number(el.vol.value));
-  el.muteBtn.addEventListener('click', ()=> { audio.muted = !audio.muted; el.muteBtn.textContent = audio.muted ? '🔇' : '🔈'; });
-
-  el.shuffleBtn.addEventListener('click', ()=> { state.shuffle = !state.shuffle; el.shuffleBtn.style.opacity = state.shuffle ? 1 : 0.6; save(); });
-  el.repeatBtn.addEventListener('click', ()=> {
-    state.repeat = state.repeat==='off' ? 'all' : state.repeat==='all' ? 'one' : 'off';
-    el.repeatBtn.textContent = state.repeat==='off' ? '🔁' : state.repeat==='all' ? '🔁•All' : '🔁•1';
-    save();
-  });
-
-  // keyboard shortcuts
-  window.addEventListener('keydown', (e)=>{
-    if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-    if(e.code==='Space'){ e.preventDefault(); audio.paused ? play() : pause(); }
-    if(e.key==='ArrowLeft') audio.currentTime = Math.max(0, audio.currentTime-5);
-    if(e.key==='ArrowRight') audio.currentTime = Math.min(audio.duration||0, audio.currentTime+5);
-    if(e.key==='n' || e.key==='N') next();
-    if(e.key==='p' || e.key==='P') prev();
-    if(e.key==='s' || e.key==='S') { state.shuffle = !state.shuffle; save(); }
-    if(e.key==='r' || e.key==='R') { el.repeatBtn.click(); }
-  });
-
-  /* ----- Add / Import / Export ----- */
-  el.file.addEventListener('change', async e=>{
-    const files = Array.from(e.target.files || []);
-    await addFiles(files);
-    e.target.value = '';
-  });
-
-  async function addFiles(files){
-    for(const f of files){
-      if(!f.type.startsWith('audio/')) continue;
-      const id = uid();
-      const objectUrl = URL.createObjectURL(f);
-      const meta = inferMetaFromName(f.name);
-      const track = { id, title: meta.title, artist: meta.artist, album: meta.album, src: objectUrl, kind: 'file', cover: undefined };
-      state.library.push(track);
-    }
-    save(); renderLibrary();
-  }
-
-  document.getElementById('btn-add-url').addEventListener('click', ()=>{
-    const url = prompt('Tempel URL (.mp3/.aac/.ogg/.m3u8):');
-    if(!url) return;
-    const title = prompt('Judul (opsional):') || url.split('/').pop().split('?')[0];
-    const artist = prompt('Artist (opsional):') || '';
-    const cover = prompt('Cover URL (opsional):') || '';
-    const kind = url.endsWith('.m3u8') ? 'hls' : 'url';
-    const t = { id: uid(), title, artist, album:'', src: url, kind, cover };
-    state.library.push(t);
-    save(); renderLibrary();
-  });
-
-  el.exportBtn.addEventListener('click', ()=>{
-    const payload = {
-      library: state.library.filter(t=>t.kind!=='file'), // lokal file gak diexport
-      playlists: state.playlists
-    };
-    const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='danielmusic.json'; a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  el.importBtn.addEventListener
+    <script src="app.js"></script>
+</body>
+</html>
