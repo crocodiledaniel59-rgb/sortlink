@@ -1,15 +1,11 @@
-// Application State
 let isInPrankMode = false;
 let progressInterval;
 let threatMessageInterval;
 let popupTimeout;
 
-// Gemini API Configuration
-// For production, you should replace this with your actual API key
 const GEMINI_API_KEY = 'AIzaSyBSZUCrHWZcopKuyp9bZ6vIc-XqiTFYyBQ';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-// Sound effects using Web Audio API
 class AudioManager {
     constructor() {
         this.audioContext = null;
@@ -73,10 +69,8 @@ class AudioManager {
     }
 }
 
-// Initialize audio manager
 const audioManager = new AudioManager();
 
-// Gemini API Integration
 class ThreatGenerator {
     constructor() {
         this.threatTypes = [
@@ -211,30 +205,26 @@ class ThreatGenerator {
     }
 }
 
-// Initialize threat generator
 const threatGenerator = new ThreatGenerator();
 
-// DOM Elements
 const legitimateInterface = document.getElementById('legitimate-interface');
 const prankInterface = document.getElementById('prank-interface');
 const startScanBtn = document.getElementById('start-scan-btn');
 const resetBtn = document.getElementById('reset-btn');
 const loadingScreen = document.getElementById('loading-screen');
 
-// Progress tracking
 let currentProgress = 0;
 
-// Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     initializeApplication();
 });
 
 function initializeApplication() {
-    // Set up event listeners
+    
     startScanBtn.addEventListener('click', handleScanStart);
     resetBtn.addEventListener('click', handleReset);
     
-    // Set up popup close handlers
+    
     document.querySelectorAll('.close-popup').forEach(button => {
         button.addEventListener('click', function() {
             const popupId = this.getAttribute('data-popup');
@@ -242,7 +232,6 @@ function initializeApplication() {
         });
     });
 
-    // Enable audio on user interaction
     document.addEventListener('click', function enableAudio() {
         if (audioManager.audioContext && audioManager.audioContext.state === 'suspended') {
             audioManager.audioContext.resume();
@@ -255,13 +244,10 @@ async function handleScanStart() {
     
     isInPrankMode = true;
     
-    // Show loading screen
     showLoadingScreen();
     
-    // Wait for dramatic effect
     await sleep(3000);
     
-    // Hide loading screen and start prank sequence
     hideLoadingScreen();
     startPrankSequence();
 }
@@ -275,23 +261,18 @@ function hideLoadingScreen() {
 }
 
 async function startPrankSequence() {
-    // Switch to prank interface
+
     legitimateInterface.classList.remove('active');
     prankInterface.classList.add('active');
     
-    // Play initial alert sound
     audioManager.playAlertSound();
     
-    // Start progress animation
     startProgressAnimation();
     
-    // Generate and display threat messages
     await generateThreatMessages();
     
-    // Show popup alerts
     schedulePopupAlerts();
     
-    // Add glitch effects
     addGlitchEffects();
 }
 
@@ -319,8 +300,7 @@ async function generateThreatMessages() {
         document.getElementById('threat-message-2'),
         document.getElementById('threat-message-3')
     ];
-    
-    // Generate messages with staggered timing
+
     for (let i = 0; i < threatMessages.length; i++) {
         setTimeout(async () => {
             const message = await threatGenerator.generateThreatMessage(i);
@@ -345,14 +325,13 @@ function animateTextReveal(element, text) {
 }
 
 async function schedulePopupAlerts() {
-    // First popup after 4 seconds
+    
     setTimeout(async () => {
         const message = await threatGenerator.generatePopupMessage();
         showPopup('popup-1', message);
         audioManager.playAlertSound();
     }, 4000);
     
-    // Second popup after 8 seconds
     setTimeout(async () => {
         const message = await threatGenerator.generatePopupMessage();
         showPopup('popup-2', message);
@@ -367,7 +346,6 @@ function showPopup(popupId, message) {
     messageElement.textContent = message;
     popup.classList.add('active');
     
-    // Auto-close popup after 5 seconds
     setTimeout(() => {
         closePopup(popupId);
     }, 5000);
@@ -379,7 +357,7 @@ function closePopup(popupId) {
 }
 
 function addGlitchEffects() {
-    // Add random glitch sounds
+    
     const glitchInterval = setInterval(() => {
         if (!isInPrankMode) {
             clearInterval(glitchInterval);
@@ -391,7 +369,7 @@ function addGlitchEffects() {
         }
     }, 2000);
     
-    // Add screen flicker effect
+    
     const flickerInterval = setInterval(() => {
         if (!isInPrankMode) {
             clearInterval(flickerInterval);
@@ -408,69 +386,57 @@ function addGlitchEffects() {
 }
 
 function handleReset() {
-    // Reset application state
+    
     isInPrankMode = false;
     
-    // Clear intervals
     if (progressInterval) {
         clearInterval(progressInterval);
     }
     
-    // Reset progress
     currentProgress = 0;
     document.getElementById('progress').textContent = '0';
     document.querySelector('.loading-fill').style.width = '0%';
     
-    // Close any open popups
     document.querySelectorAll('.popup-overlay').forEach(popup => {
         popup.classList.remove('active');
     });
     
-    // Reset threat messages
     document.getElementById('threat-message-1').textContent = 'Scanning for threats...';
     document.getElementById('threat-message-2').textContent = 'Analyzing attack vector...';
     document.getElementById('threat-message-3').textContent = 'Generating threat report...';
     
-    // Reset visual effects
     document.body.style.filter = 'none';
     
-    // Switch back to legitimate interface
     prankInterface.classList.remove('active');
     legitimateInterface.classList.add('active');
     
-    // Play reset sound
     setTimeout(() => {
         audioManager.audioContext && audioManager.audioContext.resume();
     }, 100);
 }
 
-// Utility function for delays
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Handle window resize for responsiveness
 window.addEventListener('resize', function() {
-    // Adjust interface layout if needed
+    
     const isMobile = window.innerWidth < 768;
     document.body.classList.toggle('mobile', isMobile);
 });
 
-// Prevent right-click context menu for more immersive experience
 document.addEventListener('contextmenu', function(e) {
     if (isInPrankMode) {
         e.preventDefault();
     }
 });
 
-// Handle escape key to reset (emergency exit)
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && isInPrankMode) {
         handleReset();
     }
 });
 
-// Console message for developers
 console.log('%cSecureShield Pro - Prank Application', 'font-size: 20px; color: #4299e1; font-weight: bold;');
 console.log('%cThis is a harmless prank application. No actual security threats detected.', 'font-size: 14px; color: #718096;');
 console.log('%cPress ESC key to reset the application at any time.', 'font-size: 12px; color: #a0aec0;');
