@@ -135,6 +135,45 @@
       updateUI();
   }
 
+    // FUNGSI BARU UNTUK REDEEM KODE
+  function redeemManaCode() {
+    const code = document.getElementById("redeemInput").value;
+    if (!code) return alert("Masukkan kode redeem terlebih dahulu.");
+
+    const user = userData[currentUser];
+    
+    // 1. Cek apakah kode ini sudah pernah dipakai
+    if (user.usedCodes && user.usedCodes.includes(code)) {
+        return alert("Error: Kode ini sudah pernah digunakan!");
+    }
+
+    try {
+        // 2. Decode kode untuk melihat isinya
+        const decodedCode = atob(code);
+        const [email, amount, timestamp] = decodedCode.split('|');
+        const manaAmount = parseInt(amount);
+
+        // 3. Validasi: Apakah kode ini untuk pemain yang benar?
+        if (email !== currentUser) {
+            return alert("Error: Kode ini tidak valid untuk akun Anda.");
+        }
+
+        // 4. Jika semua valid, tambahkan Mana
+        user.mana += manaAmount;
+        if (!user.usedCodes) user.usedCodes = []; // Inisialisasi jika belum ada
+        user.usedCodes.push(code); // Catat kode ini sebagai "sudah dipakai"
+
+        localStorage.setItem("alchemistData", JSON.stringify(userData));
+        updateMana();
+        alert(`✅ Berhasil! ${manaAmount} Mana telah ditambahkan ke akun Anda.`);
+        document.getElementById("redeemInput").value = ""; // Kosongkan input
+
+    } catch (error) {
+        // Jika kode tidak bisa di-decode (format salah)
+        alert("Error: Kode redeem tidak valid.");
+    }
+  }
+
   // FUNGSI UNTUK CEK LOGIN OTOMATIS SAAT HALAMAN DIBUKA
   window.onload = function() {
     const lastSession = localStorage.getItem("lastAlchemistSession");
