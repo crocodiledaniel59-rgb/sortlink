@@ -1,0 +1,121 @@
+/* --- Variabel Tema --- */
+:root {
+    --bg-gradient-start: #4F46E5;
+    --bg-gradient-via: #7C3AED;
+    --bg-gradient-end: #EC4899;
+    --text-color: #FFFFFF;
+    --bubble-user-bg: rgba(255, 255, 255, 0.3);
+    --bubble-ai-bg: rgba(0, 0, 0, 0.2);
+    --glow-color: #EC4899;
+}
+
+/* Tema Gelap (Default) */
+body.dark {
+    /* Sudah didefinisikan di :root */
+}
+
+/* Tema Terang */
+body.light {
+    --bg-gradient-start: #a8dadc;
+    --bg-gradient-via: #f1faee;
+    --bg-gradient-end: #e63946;
+    --text-color: #1d3557;
+    --bubble-user-bg: #457b9d;
+    --bubble-ai-bg: #f1faee;
+    /* Ganti warna lain jika perlu */
+}
+
+/* --- TEMA TAMBAHAN --- */
+body[data-theme="mocha"] {
+    --bg-gradient-start: #4a2c2a;
+    --bg-gradient-via: #6f4e37;
+    --bg-gradient-end: #c4a484;
+    --glow-color: #c4a484;
+}
+body[data-theme="matcha"] {
+    --bg-gradient-start: #556b2f;
+    --bg-gradient-via: #8fbc8f;
+    --bg-gradient-end: #a2d2a2;
+    --glow-color: #8fbc8f;
+}
+/* Tambahkan tema kopi dan ice cream dengan cara yang sama */
+
+/* Menerapkan Variabel */
+body {
+    background-image: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-via), var(--bg-gradient-end));
+    color: var(--text-color);
+}
+/* Tambahkan variabel ke elemen lain seperti tombol, input, dll. */
+
+
+/* --- Animasi Input Glow --- */
+@keyframes glowing-border {
+    0% { box-shadow: 0 0 5px var(--glow-color); }
+    50% { box-shadow: 0 0 20px var(--glow-color); }
+    100% { box-shadow: 0 0 5px var(--glow-color); }
+}
+#promptTextarea:focus {
+    animation: glowing-border 2s ease-in-out infinite;
+}
+
+/* --- Bubble Chat --- */
+.message-bubble {
+    padding: 12px 18px;
+    border-radius: 20px;
+    max-width: 80%;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+.message-bubble:hover {
+    transform: scale(1.02);
+}
+.user-bubble {
+    background: var(--bubble-user-bg);
+    border-bottom-right-radius: 5px;
+    align-self: flex-end;
+}
+.ai-bubble {
+    background: var(--bubble-ai-bg);
+    border-bottom-left-radius: 5px;
+    align-self: flex-start;
+}
+#conversationLog {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Menu Opsi Bubble --- */
+.bubble-options {
+    position: absolute;
+    bottom: -30px;
+    display: flex;
+    gap: 8px;
+    background: rgba(0,0,0,0.4);
+    padding: 4px 8px;
+    border-radius: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+}
+.message-bubble.active .bubble-options {
+    opacity: 1;
+    visibility: visible;
+}
+.bubble-options button {
+    background: none; border: none; color: white; cursor: pointer;
+}
+
+/* --- Animasi Delete & Copy --- */
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+.exploding {
+    animation: explode 0.3s ease-out forwards;
+}
+
+.copy-clone {
+    position: absolute;
+    pointer-events: none;
+    transition: transform 0.5s ease-in-out, clip-path 0.5s ease-in-out, opacity 0.5s;
+}

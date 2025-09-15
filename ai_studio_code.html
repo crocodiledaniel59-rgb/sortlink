@@ -1,0 +1,38 @@
+<!-- Di suatu tempat di atas Dashboard -->
+<div class="fixed top-4 right-4 flex items-center space-x-2 z-10">
+    <!-- Tombol Pemilih Tema -->
+    <div class="relative">
+        <button id="themePickerBtn" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white text-xl">🎨</button>
+        <div id="themeOptions" class="hidden absolute right-0 mt-2 w-32 bg-white/30 backdrop-blur-lg rounded-lg shadow-lg p-2 space-y-1">
+            <button class="theme-btn w-full text-left" data-theme="liquid-glass">Liquid Glass</button>
+            <button class="theme-btn w-full text-left" data-theme="mocha">Mocha</button>
+            <button class="theme-btn w-full text-left" data-theme="matcha">Matcha</button>
+            <button class="theme-btn w-full text-left" data-theme="kopi">Kopi</button>
+            <button class="theme-btn w-full text-left" data-theme="ice-cream">Ice Cream</button>
+        </div>
+    </div>
+    <!-- Tombol Mode Gelap/Terang -->
+    <button id="modeToggle" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white text-xl">
+        <span id="modeIcon">🌙</span> <!-- Ikon akan berubah di sini -->
+    </button>
+</div>
+
+
+<!-- Ubah Bagian Prompt Zone di dalam #dashboard -->
+<div id="promptZone" class="glass-effect p-4 text-white">
+    <h2 class="text-xl font-semibold mb-2">Prompt Zone</h2>
+    <div class="relative">
+        <textarea id="promptTextarea" placeholder="Ketik atau tekan mic untuk bicara..." class="w-full p-3 bg-white/20 border-none rounded-lg placeholder-white/70 focus:outline-none transition-all duration-300"></textarea>
+        <!-- Tombol Voice-to-Text -->
+        <button id="voiceBtn" class="absolute right-3 top-3 text-white/70 hover:text-white text-xl">🎤</button>
+    </div>
+    <button onclick="kirimPrompt()" class="bg-green-600 text-white px-4 py-3 rounded-lg w-full font-bold hover:bg-green-700 transition-all mt-3">Kirim Prompt</button>
+</div>
+
+<!-- Ubah Bagian Riwayat menjadi Log Percakapan -->
+<div class="glass-effect p-4 text-white">
+    <h2 class="text-xl font-semibold mb-2">Log Percakapan</h2>
+    <div id="conversationLog" class="space-y-4 max-h-96 overflow-y-auto">
+        <!-- Pesan akan muncul di sini -->
+    </div>
+</div>
