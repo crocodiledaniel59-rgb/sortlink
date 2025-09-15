@@ -60,6 +60,20 @@
   function toggleLogin() { document.getElementById("registerSection").classList.add("hidden"); document.getElementById("loginSection").classList.remove("hidden"); }
   function register() { const email = document.getElementById("regEmail").value; const password = document.getElementById("regPassword").value; if (!email || !password) return alert("Scroll and Secret Word cannot be empty!"); if (userData[email]) return alert("This scroll is already claimed by another alchemist!"); userData[email] = { password, level: 1, mana: 100, maxMana: 100, grimoire: [], discovered: ["Api", "Air", "Tanah", "Udara"] }; localStorage.setItem("alchemistData", JSON.stringify(userData)); alert("Apprenticeship successful. Please enter your laboratory."); toggleLogin(); }
   function login() { const email = document.getElementById("email").value; const password = document.getElementById("password").value; if (userData[email] && userData[email].password === password) { currentUser = email; loadDashboard(); } else { alert("Login failed! The ancient scrolls do not recognize you."); } }
+    function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    if (userData[email] && userData[email].password === password) {
+      currentUser = email;
+      
+      // TAMBAHKAN BARIS INI UNTUK MENYIMPAN SESI
+      localStorage.setItem("lastAlchemistSession", currentUser);
+      
+      loadDashboard();
+    } else {
+      alert("Login failed! The ancient scrolls do not recognize you.");
+    }
+    }
   function loadDashboard() { document.getElementById("loginSection").classList.add("hidden"); document.getElementById("registerSection").classList.add("hidden"); document.getElementById("dashboard").classList.remove("hidden"); document.getElementById("username").innerText = currentUser.split('@')[0]; updateUI(); }
   function updateUI() { updateMana(); updateLevel(); updateGrimoire(); populateSelectors(); }
   function logout() { currentUser = null; document.getElementById("dashboard").classList.add("hidden"); document.getElementById("loginSection").classList.remove("hidden"); hideDonationInfo(); }
