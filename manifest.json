@@ -1,7 +1,7 @@
 {
   "name": "MTS Mambaul Hasan",
   "short_name": "MTS",
-  "start_url": "splash.html",
+  "start_url": "/splash.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e293b",
