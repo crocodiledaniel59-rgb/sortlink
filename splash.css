@@ -15,7 +15,7 @@ body {
 
 .logo {
   width: 120px;
-  animation: spin 2s linear infinite;
+  animation: spin 0.02s linear infinite;
 }
 
 @keyframes spin {
