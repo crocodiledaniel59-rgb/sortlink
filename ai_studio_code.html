@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OSIM 2025 - MTS MAMBAUL HASAN</title>
+  <style>
+    /* --- VARIABLES & GLOBAL STYLES --- */
+    :root {
+      --primary-purple: #58427c;
+      --secondary-purple: #3d2c5a;
+      --blue: #2c6cff;
+      --green: #1faa5b;
+      --danger: #ff3b3b;
+      
+      --background-light: #f0f2f5;
+      --text-light: #1c lessened;
+      --glass-bg-light: rgba(255, 255, 255, 0.5);
+      --border-light: rgba(200, 200, 200, 0.4);
+      --shadow-light: rgba(0, 0, 0, 0.1);
+
+      --background-dark: #12121c;
+      --text-dark: #e4e6eb;
+      --glass-bg-dark: rgba(40, 30, 60, 0.5);
+      --border-dark: rgba(255, 255, 255, 0.2);
+      --shadow-dark: rgba(0, 0, 0, 0.3);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background-light);
+      color: var(--text-light);
+      background-image: 
+        radial-gradient(circle at 1% 1%, var(--primary-purple) 1px, transparent 1px),
+        radial-gradient(circle at 99% 99%, var(--primary-purple) 1px, transparent 1px);
+      background-size: 50px 50px;
+      transition: background-color 0.5s ease, color 0.5s ease;
+      min-height: 100vh;
+    }
+    body.dark-mode {
+      background-color: var(--background-dark);
+      color: var(--text-dark);
+    }
+    
+    /* --- LOGIN SHELL STYLES --- */
+    .login-wrapper {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .shell {
+      width: min(1050px, 96vw);
+      background: var(--glass-bg-light);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 20px 60px var(--shadow-light);
+    }
+    body.dark-mode .shell {
+      background: var(--glass-bg-dark);
+      border-color: var(--border-dark);
+      box-shadow: 0 20px 60px var(--shadow-dark);
+    }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+    .tab-btn {
+      border: 0; background: rgba(0,0,0,0.1); color: var(--text-light);
+      padding: 10px 14px; border-radius: 999px; cursor: pointer; font-weight: 600;
+    }
+    body.dark-mode .tab-btn { background: rgba(255,255,255,0.1); color: var(--text-dark); }
+    .tab-btn.active { background: var(--blue); color: #fff; }
+
+    .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
+    .panel {
+      background: var(--glass-bg-light); border: 1px solid var(--border-light);
+      border-radius: 20px; padding: 26px; box-shadow: 0 8px 30px var(--shadow-light); min-height: 420px;
+    }
+    body.dark-mode .panel {
+      background: var(--glass-bg-dark); border-color: var(--border-dark); box-shadow: 0 8px 30px var(--shadow-dark);
+    }
+    .hero { background: none; border: none; display: grid; place-items: center; padding: 24px; min-height: 368px; }
+    .hero img { max-width: 100%; height: auto; }
+    
+    h1 { margin: 0 0 6px 0; font-size: 28px; }
+    p.lead { margin: 0 0 18px 0; opacity: 0.8; }
+    label { display: block; font-size: 14px; margin: 12px 0 6px; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 12px 14px; font-size: 16px; border-radius: 12px;
+      outline: none; background: rgba(255,255,255,0.7); border: 1px solid var(--border-light); color: #000;
+    }
+    body.dark-mode input[type="text"], body.dark-mode input[type="password"] {
+      background: rgba(0,0,0,0.2); border-color: var(--border-dark); color: #fff;
+    }
+    input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(44,108,255,.15); }
+    .row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer;
+      background: var(--green); color: #fff; font-weight: 700; width: 100%; font-size: 16px;
+    }
+    .btn.blue { background: var(--blue); }
+    .link { color: var(--blue); text-decoration: none; font-weight: 600; }
+    .check { display: flex; gap: 10px; align-items: center; margin: 12px 0; }
+    .tiny { font-size: 12px; opacity: 0.8; }
+    
+    /* --- DASHBOARD (KONTEN UTAMA) STYLES --- */
+    nav, .card, .about, .vision, footer, .theme-toggle {
+        transition: background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+    }
+    nav {
+      padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 999; background: var(--glass-bg-light);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light); box-shadow: 0 4px 20px var(--shadow-light);
+    }
+    body.dark-mode nav {
+      background: var(--glass-bg-dark); border-bottom: 1px solid var(--border-dark); box-shadow: 0 4px 20px var(--shadow-dark);
+    }
+    nav .logo { display: flex; align-items: center; gap: 10px; }
+    nav img { width: 40px; height: 40px; }
+    nav h2 { font-size: 20px; }
+    nav ul { list-style: none; display: flex; align-items: center; gap: 20px; }
+    nav ul li a { text-decoration: none; font-weight: bold; transition: color 0.3s; }
+    nav ul li a:hover { color: var(--primary-purple); }
+    body.dark-mode nav ul li a:hover { color: #c7b3ff; }
+    
+    #btnLogout {
+        background: var(--danger); color: white; border: none; padding: 8px 12px;
+        border-radius: 8px; font-weight: bold; cursor: pointer;
+    }
+
+    .theme-toggle {
+        cursor: pointer; background: var(--background-light); border: 1px solid var(--border-light);
+        width: 40px; height: 40px; border-radius: 50%; display: flex;
+        justify-content: center; align-items: center; font-size: 20px;
+    }
+    body.dark-mode .theme-toggle { background: var(--secondary-purple); border: 1px solid var(--border-dark); }
+    .theme-toggle .moon { display: block; }
+    .theme-toggle .sun { display: none; }
+    body.dark-mode .theme-toggle .moon { display: none; }
+    body.dark-mode .theme-toggle .sun { display: block; }
+    
+    header { text-align: center; padding: 40px 20px; }
+    header img.logo { width: 80px; border-radius: 10px; margin-bottom: 10px; }
+    header h1 { font-size: 2.2em; }
+    .banner img { width: 100%; max-height: 300px; object-fit: cover; }
+    
+    .video-container {
+      max-width: 800px; margin: auto; padding: 20px; border-radius: 15px;
+      background: var(--glass-bg-light); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-light); box-shadow: 0 8px 32px 0 var(--shadow-light);
+    }
+    body.dark-mode .video-container { background: var(--glass-bg-dark); border: 1px solid var(--border-dark); box-shadow: 0 8px 32px 0 var(--shadow-dark); }
+    .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; }
+    .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    
+    section { padding: 50px 20px; }
+    .section-title { text-align: center; font-size: 28px; margin-bottom: 25px; }
+    .about, .vision {
+      max-width: 800px; margin: auto; padding: 25px; border-radius: 15px;
+      background: var(--glass-bg-light); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-light); box-shadow: 0 8px 32px 0 var(--shadow-light);
+    }
+    body.dark-mode .about, body.dark-mode .vision { background: var(--glass-bg-dark); border: 1px solid var(--border-dark); box-shadow: 0 8px 32px 0 var(--shadow-dark); }
+    .about p, .vision p, .vision li { line-height: 1.7; margin-bottom: 10px; }
+    .vision ul { padding-left: 20px; }
+    
+    .slider-container { position: relative; overflow: hidden; padding: 20px 0; }
+    .slider-wrapper { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .slider-wrapper::-webkit-scrollbar { height: 8px; }
+    .slider-wrapper::-webkit-scrollbar-track { background: var(--border-light); border-radius: 10px; }
+    body.dark-mode .slider-wrapper::-webkit-scrollbar-track { background: var(--secondary-purple); }
+    .slider-wrapper::-webkit-scrollbar-thumb { background: var(--primary-purple); border-radius: 10px; }
+    
+    .card {
+      flex: 0 0 320px; scroll-snap-align: center; padding: 25px; text-align: center;
+      border-radius: 15px; background: var(--glass-bg-light); backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-light);
+      box-shadow: 0 8px 32px 0 var(--shadow-light); opacity: 0; transform: translateY(30px); transition: 0.6s ease;
+    }
+    body.dark-mode .card { background: var(--glass-bg-dark); border: 1px solid var(--border-dark); box-shadow: 0 8px 32px 0 var(--shadow-dark); }
+    .card:hover { transform: translateY(-5px); }
+    .card.show { opacity: 1; transform: translateY(0); }
+    .card img { width: 120px; height: 120px; object-fit: cover; border-radius: 100%; border: 4px solid var(--primary-purple); margin-bottom: 15px; }
+    .card h2 { margin-bottom: 5px; }
+    .detail-box { background: rgba(0, 0, 0, 0.05); padding: 12px; border-radius: 10px; font-size: 14px; text-align: left; margin-top: 15px; }
+    body.dark-mode .detail-box { background: rgba(0, 0, 0, 0.2); }
+    
+    /* --- Gallery Section Styles (BARU DITAMBAHKAN) --- */
+    .gallery-container {
+      max-width: 1000px; margin: auto; padding: 20px; border-radius: 15px;
+      background: var(--glass-bg-light); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-light); box-shadow: 0 8px 32px 0 var(--shadow-light);
+    }
+    body.dark-mode .gallery-container {
+      background: var(--glass-bg-dark); border: 1px solid var(--border-dark); box-shadow: 0 8px 32px 0 var(--shadow-dark);
+    }
+    .gallery-item {
+      flex: 0 0 300px; height: 180px; scroll-snap-align: center;
+      border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      opacity: 0; transform: translateY(30px); transition: all 0.6s ease;
+    }
+    .gallery-item:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+    .gallery-item.show { opacity: 1; transform: translateY(0); }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    footer { text-align: center; padding: 15px; font-size: 14px; background: var(--background-light); border-top: 1px solid var(--border-light); }
+    body.dark-mode footer { background: var(--background-dark); border-top: 1px solid var(--border-dark); }
+    
+    /* --- RESPONSIVE TWEAKS --- */
+    @media screen and (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; gap: 12px; }
+      .hero { display: none; }
+    }
+    @media screen and (max-width: 768px) {
+      nav { flex-direction: column; align-items: flex-start; }
+      nav ul { width: 100%; margin-top: 10px; }
+    }
+  </style>
+</head>
+<body class="dark-mode">
+
+<!-- ================= LOGIN / REGISTER ================= -->
+<div class="login-wrapper" id="loginShell">
+  <div class="shell">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="login">Masuk</button>
+      <button class="tab-btn" data-tab="register">Daftar</button>
+    </div>
+    <div class="grid">
+      <div class="panel hero">
+        <img src="https://files.catbox.moe/obytrl.jpg" alt="Ilustrasi">
+      </div>
+      <div class="panel">
+        <section id="login">
+          <h1>Selamat Datang</h1>
+          <p class="lead">Masuk untuk mengakses halaman.</p>
+          <form id="loginForm" autocomplete="off">
+            <label for="user">Username</label>
+            <input id="user" type="text" placeholder="Masukkan username" required />
+            <label for="pass">Kata Sandi</label>
+            <input id="pass" type="password" placeholder="••••••••" required />
+            <div class="row">
+              <div></div>
+              <a class="link tiny" href="#" id="forgotPassLink">Lupa sandi?</a>
+            </div>
+            <div style="margin-top:16px">
+              <button class="btn blue" type="submit">Masuk</button>
+            </div>
+          </form>
+        </section>
+        <section id="register" style="display:none">
+          <h1>Buat Akun Baru</h1>
+          <p class="lead">Daftar untuk mulai menggunakan halaman.</p>
+          <form id="registerForm" autocomplete="off">
+            <label for="regUser">Username</label>
+            <input id="regUser" type="text" placeholder="pilih username" required />
+            <label for="regPass">Kata Sandi</label>
+            <input id="regPass" type="password" placeholder="min. 4 karakter" required />
+            <label for="regPass2">Ulangi Kata Sandi</label>
+            <input id="regPass2" type="password" placeholder="ketik ulang" required />
+            <div style="margin-top:16px">
+              <button class="btn" type="submit">Daftar</button>
+            </div>
+          </form>
+          <p class="tiny" style="margin-top:10px">Sudah punya akun? <a href="#" class="link" id="goLogin">Masuk</a></p>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= KONTEN UTAMA (DASHBOARD) ================= -->
+<main id="dashboard" style="display:none;">
+    <nav>
+      <div class="logo">
+        <img src="https://files.catbox.moe/uud6t4.jpg" alt="Logo Sekolah" />
+        <h2 id="nav-username">MTS MAMBAUL HASAN</h2>
+      </div>
+      <ul>
+        <li><a href="#tentang">Tentang</a></li>
+        <li><a href="#video">Video</a></li>
+        <li><a href="#siswa">Siswa</a></li>
+        <li>
+          <button class="theme-toggle" id="theme-toggle" title="Ganti Tema">
+            <span class="moon">🌝</span>
+            <span class="sun">🌚</span>
+          </button>
+        </li>
+        <li><button id="btnLogout">Logout</button></li>
+      </ul>
+    </nav>
+    <header>
+      <img src="https://files.catbox.moe/uud6t4.jpg" class="logo" />
+      <h1>📚 OSIM 2025 - MTS MAMBAUL HASAN</h1>
+    </header>
+    <div class="banner">
+      <img src="https://files.catbox.moe/obytrl.jpg"alt="Banner Sekolah">
+    </div>
+
+    <section id="video">
+      <h2 class="section-title">Video Dokumentasi</h2>
+      <div class="video-container">
+        <div class="video-wrapper">
+          <iframe src="https://www.youtube.com/embed/At1j6Nmi_QI?si=q_NK74P4iOxoaJ8D" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section id="tentang">
+      <h2 class="section-title">Tentang Sekolah</h2>
+      <div class="about">
+        <p>MTS MAMBAUL HASAN adalah sekolah yang luar biasa, tujuannya mencetak anak yang pintar, beradab, rajin, dan ber-akhlak mulia.</p>
+        <p>Kami menyediakan pembelajaran agama ataupun non agama yang efisien, ada 3 mapel utama untuk mapel agama, <strong>Al-Qur'an Hadist, Aqidah Akhlak, dan Fiqih</strong>.</p>
+      </div>
+    </section>
+    <section id="visi&misi">
+      <h2 class="section-title">Visi & Misi</h2>
+      <div class="vision">
+        <p><strong>Visi:</strong> Menjadi sekolah unggulan dalam bidang keagamaan maupun non-agama untuk masa depan bangsa.</p>
+        <p><strong>Misi:</strong></p>
+        <ul>
+          <li>Mengembangkan pendidikan berbasis keagamaan,karakter,bakat,dll</li>
+          <li>Melatih siswa agar siap menghadapi lingkungan masyarakat di masa mendatang.</li>
+          <li>Mendorong kreativitas dan inovasi di kalangan pelajar.</li>
+          <li>Menanamkan nilai mulia kepada siswa, disiplin,mandiri, dan tanggung jawab.</li>
+          <li>Menghadirkan penyesuaian siswa pada kemampuan akademis secara individual ataupun berkelompok.</li>
+        </ul>
+      </div>
+    </section>
+    
+    <!-- ================= DOKUMENTASI LAINNYA (BARU DITAMBAHKAN) ================= -->
+    <section id="dokumentasi">
+      <h2 class="section-title">Dokumentasi Lainnya</h2>
+      <div class="gallery-container">
+        <div class="slider-wrapper">
+          
+          <!-- Ganti 'src' dengan link gambar dokumentasi Anda -->
+          <div class="gallery-item">
+            <img src="https://files.catbox.moe/dnnao8.jpg" alt="Dokumentasi 1">
+          </div>
+          <div class="gallery-item">
+            <img src="https://files.catbox.moe/9dl2vw.jpg" alt="Dokumentasi 2">
+          </div>
+          <div class="gallery-item">
+            <img src="https://files.catbox.moe/zyv6ho.jpg" alt="Dokumentasi 3">
+          </div>
+          <div class="gallery-item">
+            <img src="https://files.catbox.moe/dlm6u0.jpg" alt="Dokumentasi 4">
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="siswa">
+      <h2 class="section-title">Anggota Osim (LK)</h2>
+      <div class="slider-container">
+        <div class="slider-wrapper">
+          <div class="card">
+            <img src="https://files.catbox.moe/4kgv4j.jpg" alt="Foto Osim"/>
+            <h2>ubay</h2>
+            <p><strong>Kelas:</strong>VIII</p>
+            <p><strong>Asal:</strong> Sumberrejo</p>
+            <div class="detail-box"><p><strong>Motto:</strong> "gatau belum nanya"</p></div>
+          </div>
+          <div class="card">
+            <img src="https://i.imgur.com/your-photo-2.jpg" alt="Foto Osim"/>
+            <h2>Haikal</h2>
+            <p><strong>Kelas:</strong> VIII</p>
+            <p><strong>Asal:</strong>sumberrejo</p>
+            <div class="detail-box"><p><strong>Motto:</strong> "gatau, soalnya belum nanya"</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      &copy; 2025 | Dibuat oleh <strong>Daniel</strong> - MTs Mambaul Hasan
+    </footer>
+</main>
+
+<!-- JavaScript Logic -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const app = {
+        elements: {
+            body: document.body,
+            loginShell: document.getElementById('loginShell'),
+            dashboard: document.getElementById('dashboard'),
+            navUsername: document.getElementById('nav-username'),
+            loginForm: document.getElementById('loginForm'),
+            registerForm: document.getElementById('registerForm'),
+            btnLogout: document.getElementById('btnLogout'),
+            cards: document.querySelectorAll('.card'),
+            galleryItems: document.querySelectorAll('.gallery-item'), // DITAMBAHKAN
+            themeToggle: document.getElementById('theme-toggle'),
+            tabButtons: document.querySelectorAll('.tab-btn'),
+            goLoginLink: document.getElementById('goLogin'),
+            forgotPassLink: document.getElementById('forgotPassLink'),
+        },
+
+        getUsers: function() {
+            try {
+                const users = localStorage.getItem('users');
+                return users ? JSON.parse(users) : [];
+            } catch (e) {
+                console.error("Gagal membaca data user dari localStorage:", e);
+                alert("Terjadi kesalahan saat membaca data. Mungkin browser Anda dalam mode private?");
+                return [];
+            }
+        },
+
+        saveUsers: function(users) {
+            try {
+                localStorage.setItem('users', JSON.stringify(users));
+            } catch (e) {
+                console.error("Gagal menyimpan data user ke localStorage:", e);
+                alert("Gagal menyimpan data. Pastikan browser tidak dalam mode private.");
+            }
+        },
+        
+        initializeUsers: function() {
+            if (this.getUsers().length === 0) {
+                const DEFAULT_USERS = [
+                    { user: 'daniel', pass: '1234' },
+                    { user: 'admin', pass: 'admin' }
+                ];
+                this.saveUsers(DEFAULT_USERS);
+            }
+        },
+        
+        updateView: function() {
+            const loggedIn = localStorage.getItem('loggedIn');
+            const loggedUser = localStorage.getItem('loggedUser');
+
+            if (loggedIn === 'true' && loggedUser) {
+                this.elements.loginShell.style.display = 'none';
+                this.elements.dashboard.style.display = 'block';
+                this.elements.navUsername.textContent = loggedUser;
+                this.applySavedTheme();
+                this.showOnScroll();
+            } else {
+                this.elements.loginShell.style.display = 'grid';
+                this.elements.dashboard.style.display = 'none';
+            }
+        },
+
+        handleLogin: function(e) {
+            e.preventDefault();
+            const u = this.elements.loginForm.user.value.trim();
+            const p = this.elements.loginForm.pass.value;
+            const USERS = this.getUsers();
+            const match = USERS.find(acc => acc.user.toLowerCase() === u.toLowerCase() && acc.pass === p);
+
+            if (match) {
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('loggedUser', match.user);
+                this.updateView();
+            } else {
+                alert('Username atau kata sandi salah!');
+            }
+        },
+
+        handleRegister: function(e) {
+            e.preventDefault();
+            const user = this.elements.registerForm.regUser.value.trim();
+            const pass = this.elements.registerForm.regPass.value;
+            const pass2 = this.elements.registerForm.regPass2.value;
+
+            if (user.length < 3) return alert('Username minimal 3 karakter.');
+            if (pass.length < 4) return alert('Kata sandi minimal 4 karakter.');
+            if (pass !== pass2) return alert('Ulangi kata sandi tidak cocok.');
+
+            const USERS = this.getUsers();
+            if (USERS.some(u => u.user.toLowerCase() === user.toLowerCase())) {
+                return alert(`Username "${user}" sudah dipakai. Silakan pilih yang lain.`);
+            }
+
+            USERS.push({ user, pass });
+            this.saveUsers(USERS);
+            alert(`Pendaftaran berhasil untuk username: "${user}".\nSilakan masuk dengan akun baru Anda.`);
+            
+            this.elements.tabButtons[0].click(); 
+            this.elements.loginForm.user.value = user;
+            this.elements.loginForm.pass.focus();
+        },
+
+        handleLogout: function() {
+            if (confirm('Anda yakin ingin logout?')) {
+                localStorage.removeItem('loggedIn');
+                localStorage.removeItem('loggedUser');
+                location.reload();
+            }
+        },
+
+        handleForgotPassword: function(e) {
+            e.preventDefault();
+            const userToReset = prompt("Masukkan username yang akunnya ingin Anda HAPUS/RESET:");
+            if (!userToReset) return;
+
+            const USERS = this.getUsers();
+            const userIndex = USERS.findIndex(u => u.user.toLowerCase() === userToReset.trim().toLowerCase());
+
+            if (userIndex > -1) {
+                const confirmation = confirm(`Anda yakin ingin menghapus permanen akun "${USERS[userIndex].user}"? Anda harus mendaftar ulang setelah ini.`);
+                if (confirmation) {
+                    USERS.splice(userIndex, 1);
+                    this.saveUsers(USERS);
+                    alert('Akun berhasil dihapus. Silakan daftar kembali jika diperlukan.');
+                }
+            } else {
+                alert('Username tidak ditemukan.');
+            }
+        },
+
+        switchTab: function(e) {
+            const button = e.target;
+            this.elements.tabButtons.forEach(t => t.classList.remove('active'));
+            button.classList.add('active');
+            const target = button.dataset.tab;
+            document.getElementById('login').style.display = target === 'login' ? 'block' : 'none';
+            document.getElementById('register').style.display = target === 'register' ? 'block' : 'none';
+        },
+
+        applySavedTheme: function() {
+            if (localStorage.getItem('theme') === 'light') {
+                this.elements.body.classList.remove('dark-mode');
+            } else {
+                this.elements.body.classList.add('dark-mode');
+            }
+        },
+
+        toggleTheme: function() {
+            this.elements.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', this.elements.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        },
+
+        // FUNGSI INI DIPERBARUI UNTUK MENANGANI GALERI
+        showOnScroll: function() {
+            this.elements.cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    card.classList.add('show');
+                }
+            });
+            this.elements.galleryItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    item.classList.add('show');
+                }
+            });
+        },
+
+        init: function() {
+            this.elements.loginForm.addEventListener('submit', this.handleLogin.bind(this));
+            this.elements.registerForm.addEventListener('submit', this.handleRegister.bind(this));
+            this.elements.btnLogout.addEventListener('click', this.handleLogout.bind(this));
+            this.elements.forgotPassLink.addEventListener('click', this.handleForgotPassword.bind(this));
+            this.elements.tabButtons.forEach(btn => btn.addEventListener('click', this.switchTab.bind(this)));
+            this.elements.goLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.elements.tabButtons[0].click();
+            });
+            this.elements.themeToggle.addEventListener('click', this.toggleTheme.bind(this));
+            
+            // Pasang listener di semua slider yang ada di halaman
+            window.addEventListener('scroll', this.showOnScroll.bind(this));
+            document.querySelectorAll('.slider-wrapper').forEach(slider => {
+                slider.addEventListener('scroll', this.showOnScroll.bind(this));
+            });
+            
+            this.initializeUsers();
+            this.updateView();
+        }
+    };
+
+    app.init();
+});
+</script>
+</body>
+</html>
