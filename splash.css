@@ -15,7 +15,12 @@ body {
 
 .logo {
   width: 120px;
-  animation: bounce 1.2s infinite ease-in-out;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1.1); }
 }
 
 .loading {
