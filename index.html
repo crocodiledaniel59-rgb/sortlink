@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1e293b">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OSIM 2025 - MTS MAMBAUL HASAN</title>
@@ -294,6 +296,7 @@
           </button>
         </li>
         <li><button id="btnLogout">Logout</button></li>
+        <li><button id="installBtn" hidden>Install Aplikasi</button></li>
       </ul>
     </nav>
     <header>
@@ -600,6 +603,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     app.init();
 });
+</script>
+
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then((reg) => console.log("SW registered:", reg))
+        .catch((err) => console.error("SW failed:", err));
+    });
+  }
+  </script>
+
+<script>
+  let deferredPrompt;
+  const installBtn = document.getElementById("installBtn");
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.hidden = false;
+  });
+
+  installBtn.addEventListener("click", async () => {
+    installBtn.hidden = true;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      console.log("User choice:", choiceResult.outcome);
+      deferredPrompt = null;
+    }
+  });
 </script>
 </body>
 </html>
