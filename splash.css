@@ -14,8 +14,8 @@ body {
 }
 
 .logo {
-  width: 120px;
-  animation: spin 0.02s linear infinite;
+  width: 220px;
+  animation: spin 10s linear infinite;
 }
 
 @keyframes spin {
@@ -25,7 +25,7 @@ body {
 
 .loading {
   margin-top: 20px;
-  font-size: 18px;
+  font-size: 20px;
   animation: blink 1.5s infinite;
 }
 
